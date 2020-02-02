@@ -7,6 +7,11 @@
     "web": "expo start --web",
     "eject": "expo eject"
   },
+  "author": {
+    "name": "Yasir Nadeem",
+    "url": "https://github.com/m-yasir",
+    "email": "m-yasir.dev@protonmail.com"
+  },
   "dependencies": {
     "@eva-design/eva": "^1.2.0",
     "expo": "^35.0.0",
