@@ -7,9 +7,9 @@ import {
   KeyboardAvoidingView
 } from "react-native";
 import { Text, Layout, Input, Button } from "react-native-ui-kitten";
-import { WrapComponentWithKittenProvider } from "../components/utils/theming";
+import { WrapComponentWithKittenProvider } from "../../../components/utils/theming";
 import { useNavigation } from "react-navigation-hooks";
-import { useMount } from "../components/utils/appUtil";
+import { useMount } from "../../../components/utils/appUtil";
 
 const styles = StyleSheet.create({
   container: {
@@ -27,15 +27,29 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "column",
     margin: 20
+  },
+  textHeadingLayout: {
+    backgroundColor: "#319ede",
+    marginTop: 10,
+    width: "55%",
+    padding: 5,
+    paddingRight: 0
+  },
+  textHeading: {
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 18
   }
 });
 
-const ForwardPrimer = () => {
+const InsilicoPCR = () => {
   // Non-states
   const isForward = useRef(true);
   // Component States
   const navigation = useNavigation();
   const [dnaSequence, setDnaSequence] = useState("");
+  const [forwardPrimer, setForwardPrimer] = useState("");
+  const [reversePrimer, setReversePrimer] = useState("");
   const [calculation, setCalculation] = useState(null);
   const [sequenceTerminals, setSequenceTerminals] = useState({
     initial: "",
@@ -50,14 +64,28 @@ const ForwardPrimer = () => {
     return string.split(char).length - 1;
   };
 
+  const reverseString = str => str.split("").reduce((a, b) => b + a) + "";
+
+  const getSequenceWithTerminals = (primerType, sequence) => {
+    switch (primerType) {
+      case "forward":
+        return `5'${sequence}3'`;
+      case "reverse":
+        return `3'${sequence}5'`;
+      default:
+        return;
+    }
+  };
+
   useMount(() => {
     isForward.current = navigation.getParam("isForward");
-    const sequenceTerminals = { initial: "5'", end: "3'" };
-    if (!isForward.current) {
-      sequenceTerminals.initial = "3'";
-      sequenceTerminals.end = "5'";
-    }
-    setSequenceTerminals(sequenceTerminals);
+    // const sequenceTerminals = { initial: "5'", end: "3'" };
+    // if (!isForward.current) {
+    //   sequenceTerminals.initial = "3'";
+    //   sequenceTerminals.end = "5'";
+    // }
+    // setSequenceTerminals(sequenceTerminals);
+    // setDnaSequence(navigation.getParam("DNA") || "");
     setDnaSequence(navigation.getParam("DNA") || "");
   });
 
@@ -125,7 +153,10 @@ const ForwardPrimer = () => {
   return (
     <KeyboardAvoidingView>
       <ScrollView style={styles.container}>
-        <Text><Text style={{ fontWeight: "bold" }}>DNA:</Text>{` ${dnaSequence}`}</Text>
+        <Layout style={styles.textHeadingLayout}>
+          <Text style={styles.textHeading}>Nucleotide Sequence:</Text>
+        </Layout>
+        <Text style={{ textAlign: "center" }}>{` ${dnaSequence}`}</Text>
         <Text style={{ marginTop: 5, marginBottom: 5 }}>
           <Text style={{ fontWeight: "bold" }}>Total Nucleotide:</Text>
           {` ${dnaSequence.length}`}
@@ -152,9 +183,47 @@ const ForwardPrimer = () => {
         >
           Calculate
         </Button>
-        {calculation && (
+        <Layout style={styles.textHeadingLayout}>
+          <Text
+            style={{ ...styles.textHeading, width: "70%", textAlign: "center" }}
+          >
+            Forward Primer:
+          </Text>
+        </Layout>
+        <Layout style={styles.fieldsContainer}>
+          <Input
+            value={formValues.start}
+            disabled
+            style={{
+              minWidth: 200
+            }}
+            // onChangeText={handleInputChange("start")}
+            value={forwardPrimer}
+          />
+        </Layout>
+        <Layout style={styles.textHeadingLayout}>
+          <Text
+            style={[styles.textHeading, { width: "70%", textAlign: "center" }]}
+          >
+            Reverse Primer:
+          </Text>
+        </Layout>
+        <Layout style={styles.fieldsContainer}>
+          <Input
+            value={formValues.start}
+            disabled
+            style={{
+              minWidth: 200
+            }}
+            value={reversePrimer}
+          />
+        </Layout>
+        {/* {calculation && (
           <Layout style={styles.resultsContainer}>
-            <Text><Text style={{ fontWeight: "bold" }}>Sequence:</Text>{` ${sequenceTerminals.initial} ${calculation.sequence} ${sequenceTerminals.end}`}</Text>
+            <Text>
+              <Text style={{ fontWeight: "bold" }}>Sequence:</Text>
+              {` ${sequenceTerminals.initial} ${calculation.sequence} ${sequenceTerminals.end}`}
+            </Text>
             <Text>{`AT: ${calculation.AT}`}</Text>
             <Text>{`GC: ${calculation.GC}`}</Text>
             <Text>{`Melting Temperature (TM): ${calculation.TM} (${
@@ -167,15 +236,15 @@ const ForwardPrimer = () => {
               <Text>{`Complementary: 5' ${calculation.complementary} 3'`}</Text>
             )}
           </Layout>
-        )}
+        )} */}
       </ScrollView>
     </KeyboardAvoidingView>
   );
 };
 
-const ForwardPrimerContainer = WrapComponentWithKittenProvider(ForwardPrimer);
+const InsilicoPCRContainer = WrapComponentWithKittenProvider(InsilicoPCR);
 
-ForwardPrimerContainer.navigationOptions = ({ navigation }) => ({
+InsilicoPCRContainer.navigationOptions = ({ navigation }) => ({
   title: navigation.getParam("headerTitle"),
   headerStyle: {
     backgroundColor: "#319ede"
@@ -187,4 +256,4 @@ ForwardPrimerContainer.navigationOptions = ({ navigation }) => ({
   headerTintColor: "#fff"
 });
 
-export default ForwardPrimerContainer;
+export default InsilicoPCRContainer;
