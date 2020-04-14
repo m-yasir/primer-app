@@ -134,8 +134,10 @@ const PrimerDesign = () => {
       getCharCountFromString(slicedSequence, "G") +
       getCharCountFromString(slicedSequence, "C");
     const TM = 4 * GC + 2 * AT;
-    setForwardPrimer(`5' ${slicedSequence} '3`);
-    setReversePrimer(`3' ${calculateSequencing(slicedSequence)} '5`);
+    // setForwardPrimer(`5' ${slicedSequence} '3`);
+    setForwardPrimer(slicedSequence);
+    setReversePrimer(calculateSequencing(slicedSequence));
+    // setReversePrimer(`3' ${calculateSequencing(slicedSequence)} '5`);
     setCalculation({
       sequence: slicedSequence,
       AT,
@@ -238,16 +240,7 @@ const PrimerDesign = () => {
 const PrimerDesignContainer = WrapComponentWithKittenProvider(PrimerDesign);
 
 PrimerDesignContainer.navigationOptions = ({ navigation }) => ({
-  // title: navigation.getParam("headerTitle"),
-  title: "Primer Design",
-  headerStyle: {
-    backgroundColor: "#319ede"
-  },
-  headerTitleStyle: {
-    fontWeight: "bold",
-    color: "#fff"
-  },
-  headerTintColor: "#fff"
+  title: navigation.getParam("headerTitle")
 });
 
 export default PrimerDesignContainer;

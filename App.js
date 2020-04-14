@@ -163,7 +163,15 @@ const MainNavigator = createStackNavigator(
   },
   {
     defaultNavigationOptions: {
+      headerStyle: {
+        backgroundColor: "#319ede",
+      },
+      headerTitleStyle: {
+        fontWeight: "bold",
+        color: "#fff",
+      },
       headerTitleAlign: "left",
+      headerTintColor: "#fff",
     },
   }
   // {

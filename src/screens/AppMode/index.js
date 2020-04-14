@@ -39,7 +39,7 @@ function AppMode() {
   const navigation = useNavigation();
 
   // !IMPORTANT: PI = Primer or InsilicoPCR
-  const navigateToPI = (DNA, design) => () => {
+  const navigateToDesign = (DNA, design) => () => {
     if (!DNA) {
       Alert.alert("Error", "Enter DNA Sequence!");
       return;
@@ -102,7 +102,7 @@ function AppMode() {
             style={styles.button}
             appearance="outline"
             status="primary"
-            onPress={navigateToPI(dnaSequence, "primer")}
+            onPress={navigateToDesign(dnaSequence, "primer")}
           >
             Primer Design
           </Button>
@@ -110,7 +110,7 @@ function AppMode() {
             style={styles.button}
             appearance="outline"
             status="primary"
-            onPress={navigateToPI(dnaSequence, "insilico")}
+            onPress={navigateToDesign(dnaSequence, "insilico")}
           >
             Insilico PCR
           </Button>
@@ -127,7 +127,7 @@ function AppMode() {
             style={styles.button}
             appearance="outline"
             status="primary"
-            onPress={navigateToPI(dnaSequence, "primer")}
+            onPress={navigateToDesign(dnaSequence, "primer")}
           >
             Thermocycler Reaction Design
           </Button>
@@ -142,14 +142,6 @@ const AppModeContainer = WrapComponentWithKittenProvider(AppMode);
 AppModeContainer.navigationOptions = () => {
   return {
     title: "PRIMeasy",
-    headerStyle: {
-      backgroundColor: "#319ede",
-    },
-    headerTitleStyle: {
-      fontWeight: "bold",
-      color: "#fff",
-    },
-    headerTintColor: "#fff",
   };
 };
 

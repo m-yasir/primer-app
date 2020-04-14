@@ -41,7 +41,7 @@ const LiteratureMode = () => {
           style={styles.button}
           onPress={navigateToLiterature("primer")}
         >
-          Primer Design Design
+          Primer Design
         </Button>
       </Layout>
       <Layout>
