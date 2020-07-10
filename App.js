@@ -66,7 +66,7 @@ function MainScreen() {
         flexDirection: "column",
         margin: 10,
         alignItems: "center",
-        justifyContent: "space-between",
+        justifyContent: "space-between"
       }}
     >
       {/* <ImageBackground
@@ -135,51 +135,44 @@ MainScreenContainer.navigationOptions = () => {
 };
 
 const MainNavigator = createStackNavigator(
-  {
-    Home: {
-      screen: MainScreenContainer,
-    },
-    AppMode: {
-      screen: AppMode,
-    },
-    AMPrimerDesign: {
-      screen: AMPrimerDesign,
-    },
-    AMInsilcoPCR: {
-      screen: AMInsilcoPCR,
-    },
-    LiteratureMode: {
-      screen: LiteratureMode,
-    },
-    PrimerLiterature: {
-      screen: LMPrimerDesign,
-    },
-    InsilicoPCRLiterature: {
-      screen: LMInsilicoPCR,
-    },
-    LMThermocyclerReaction: {
-      screen: LMThermocyclerReaction,
-    },
-  },
-  {
-    defaultNavigationOptions: {
-      headerStyle: {
-        backgroundColor: "#319ede",
-      },
-      headerTitleStyle: {
-        fontWeight: "bold",
-        color: "#fff",
-      },
-      headerTitleAlign: "left",
-      headerTintColor: "#fff",
-    },
-  }
-  // {
-  //   cardStyle: {
-  //     opacity: 1
-  //   },
-  //   transparentCard: true
-  // }
+	{
+		Home: {
+			screen: MainScreenContainer
+		},
+		AppMode: {
+			screen: AppMode
+		},
+		AMPrimerDesign: {
+			screen: AMPrimerDesign
+		},
+		AMInsilcoPCR: {
+			screen: AMInsilcoPCR
+		},
+		LiteratureMode: {
+			screen: LiteratureMode
+		},
+		PrimerLiterature: {
+			screen: LMPrimerDesign
+		},
+		InsilicoPCRLiterature: {
+			screen: LMInsilicoPCR
+		},
+		LMThermocyclerReaction: {
+			screen: LMThermocyclerReaction
+		}
+	},
+	{
+		defaultNavigationOptions: {
+			cardStyle: { backgroundColor: "#fff", opacity: 1 },
+			headerStyle: { backgroundColor: "#319ede" },
+			headerTintColor: "#fff",
+			headerTitleAlign: "left",
+			headerTitleStyle: { fontWeight: "bold", color: "#fff" }
+		}
+	}
+	// {
+	// 	// transparentCard: true
+	// }
 );
 
 export default createAppContainer(MainNavigator);

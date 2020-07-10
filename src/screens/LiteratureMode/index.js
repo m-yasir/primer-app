@@ -5,9 +5,9 @@ import { useNavigation } from "react-navigation-hooks";
 
 const useStyles = () => ({
   container: {
+    alignItems: "flex-start",
     display: "flex",
     flexDirection: "column",
-    alignItems: "flex-start",
     justifyContent: "center",
   },
   button: {
