@@ -22,12 +22,18 @@ const styles = StyleSheet.create({
     minWidth: width,
     minHeight: height,
   },
+  fontSize20: {
+    fontSize: 20
+  },
   fieldsContainer: {
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     margin: 10,
+  },
+  mh5: {
+    marginHorizontal: 5
   },
   initialInputField: {
     marginLeft: 10,
@@ -37,6 +43,9 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "column",
     margin: 20,
+  },
+  sequenceCharacter: {
+    marginHorizontal: 2
   },
   textHeadingLayout: {
     backgroundColor: "#319ede",
@@ -55,10 +64,12 @@ const styles = StyleSheet.create({
 });
 
 const InsilicoPCR = () => {
+  // Nav-hook
+  const navigation = useNavigation();
   // Non-states
   const isForward = useRef(true);
+  const dnaSequence = useRef(navigation.getParam("DNA"));
   // Component States
-  const navigation = useNavigation();
   const [userFP, setUserFP] = useState("");
   const [userRP, setUserRP] = useState("");
   const [sequences, setSequences] = useState(null);
@@ -94,114 +105,186 @@ const InsilicoPCR = () => {
     return sequence
       .split("")
       .map((char) => getSequenceCharacter(char))
-      .join("");
+      .map(mapCharacterWithColor);
+      // .join("");
   };
 
   const getSequenceCharColor = (char) => {
     switch (char) {
       case "T":
-        return "red";
+        return "#d20000";
       case "A":
-        return "blue";
+        return "#0200ad";
       case "G":
-        return "green";
+        return "#4a9026";
       default:
-        return "black";
+        return "#000";
     }
   };
+  
+  const mapCharacterWithColor = (char, idx) => (
+		<Text key={idx} style={[styles.fontSize20, styles.sequenceCharacter, { color: getSequenceCharColor(char) }]}>{char}</Text>
+  );
 
   const setMainSequences = () => {
     const _sequences = {
-      fp: userFP,
-      rp: userRP,
+      // fp: userFP,
+      // rp: userRP,
+      fp: "5",
+      rp: "3"
     };
     setSequences(_sequences);
   };
 
   return (
-    <KeyboardAvoidingView>
-      <ScrollView style={styles.container}>
-        {!sequences ? (
-          <Layout style={{ marginLeft: 5, marginRight: 5 }}>
-            <Layout>
-              <Layout style={styles.textHeadingLayout}>
-                <Text style={styles.textHeading}>
-                  Sequence for Forward Primer:
-                </Text>
-              </Layout>
-              <Input
-                style={styles.initialInputField}
-                onChangeText={setUserFP}
-                placeholder="Enter Sequence.."
-              />
-            </Layout>
-            <Layout>
-              <Layout style={styles.textHeadingLayout}>
-                <Text style={styles.textHeading}>
-                  Sequence for Reverse Primer:
-                </Text>
-              </Layout>
-              <Input
-                style={styles.initialInputField}
-                onChangeText={setUserRP}
-                placeholder="Enter Sequence.."
-              />
-            </Layout>
-            <Button
-              style={{
-                margin: 10,
-              }}
-              appearance="outline"
-              status="primary"
-              onPress={setMainSequences}
-            >
-              Done
-            </Button>
-          </Layout>
-        ) : (
-          <>
-            <Layout style={styles.textHeadingLayout}>
-              <Text
-                style={{
-                  ...styles.textHeading,
-                  // width: "70%",
-                  textAlign: "center",
-                }}
-              >
-                Forward Primer:
-              </Text>
-            </Layout>
-            <Layout style={styles.fieldsContainer}>
-              <Input
-                // onChangeText={handleInputChange("start")}
-                disabled
-                style={{
-                  minWidth: 200,
-                }}
-              />
-            </Layout>
-            <Layout style={styles.textHeadingLayout}>
-              <Text
-                style={[
-                  styles.textHeading,
-                  { textAlign: "center" },
-                ]}
-              >
-                Reverse Primer:
-              </Text>
-            </Layout>
-            <Layout style={styles.fieldsContainer}>
-              <Input
-                // onChangeText={handleInputChange("start")}
-                disabled
-                style={{
-                  minWidth: 200,
-                }}
-              />
-            </Layout>
-          </>
-        )}
-        {/* <Layout style={styles.textHeadingLayout}>
+		<KeyboardAvoidingView>
+			<ScrollView style={styles.container}>
+				<Layout style={styles.mh5}>
+					<Layout>
+						<Layout
+							style={{
+								alignItems: "center",
+								display: "flex",
+								flexDirection: "row",
+								justifyContent: "flex-start",
+								marginHorizontal: 5,
+								marginVertical: 10
+							}}
+						>
+							<Text style={[styles.fontSize20, styles.sequenceCharacter]}>5'</Text>
+							{calculateSequencing(dnaSequence.current)}
+							<Text style={[styles.fontSize20, styles.sequenceCharacter]}>3'</Text>
+						</Layout>
+						<Layout
+							style={{
+								alignItems: "center",
+								display: "flex",
+								flexDirection: "row",
+								justifyContent: "flex-start",
+								marginHorizontal: 5,
+								marginVertical: 10
+							}}
+						>
+							<Text style={[styles.fontSize20, styles.sequenceCharacter]}>3'</Text>
+							{calculateSequencing(
+								reverseString(dnaSequence.current)
+							)}
+							<Text style={[styles.fontSize20, styles.sequenceCharacter]}>5'</Text>
+						</Layout>
+					</Layout>
+				</Layout>
+				<Layout style={styles.mh5}>
+					<Layout>
+						<Layout style={styles.textHeadingLayout}>
+							<Text style={styles.textHeading}>
+								Sequence for Forward Primer:
+							</Text>
+						</Layout>
+						<Input
+							style={styles.initialInputField}
+							onChangeText={setUserFP}
+							placeholder="Enter Sequence.."
+						/>
+					</Layout>
+					<Layout>
+						<Layout style={styles.textHeadingLayout}>
+							<Text style={styles.textHeading}>
+								Sequence for Reverse Primer:
+							</Text>
+						</Layout>
+						<Input
+							style={styles.initialInputField}
+							onChangeText={setUserRP}
+							placeholder="Enter Sequence.."
+						/>
+					</Layout>
+					<Button
+						style={{
+							margin: 10
+						}}
+						appearance="outline"
+						status="primary"
+						onPress={setMainSequences}
+					>
+						Done
+					</Button>
+				</Layout>
+				{sequences && (
+					<Layout style={styles.mh5}>
+						<Layout>
+							<Layout
+								style={{
+									alignItems: "center",
+									display: "flex",
+									flexDirection: "row",
+									justifyContent: "flex-start",
+									marginHorizontal: 5,
+									marginVertical: 10
+								}}
+							>
+								<Text style={styles.fontSize20}>5'</Text>
+								{calculateSequencing(dnaSequence.current)}
+								<Text style={styles.fontSize20}>3'</Text>
+							</Layout>
+							<Layout
+								style={{
+									alignItems: "center",
+									display: "flex",
+									flexDirection: "row",
+									justifyContent: "flex-start",
+									marginHorizontal: 5,
+									marginVertical: 10
+								}}
+							>
+								<Text style={styles.fontSize20}>3'</Text>
+								{calculateSequencing(
+									reverseString(dnaSequence.current)
+								)}
+								<Text style={styles.fontSize20}>5'</Text>
+							</Layout>
+						</Layout>
+						{/* <Layout style={styles.textHeadingLayout}>
+							<Text
+								style={{
+									...styles.textHeading,
+									// width: "70%",
+									textAlign: "center"
+								}}
+							>
+								Forward Primer:
+							</Text>
+						</Layout>
+						<Layout style={styles.fieldsContainer}>
+							<Input
+								// onChangeText={handleInputChange("start")}
+								disabled
+								style={{
+									minWidth: 200
+								}}
+							/>
+						</Layout>
+						<Layout style={styles.textHeadingLayout}>
+							<Text
+								style={[
+									styles.textHeading,
+									{ textAlign: "center" }
+								]}
+							>
+								Reverse Primer:
+							</Text>
+						</Layout>
+						<Layout style={styles.fieldsContainer}>
+							<Input
+								// onChangeText={handleInputChange("start")}
+								disabled
+								style={{
+									minWidth: 200
+								}}
+							/>
+						</Layout> */}
+					</Layout>
+				)}
+				{/* <Layout style={styles.textHeadingLayout}>
           <Text style={styles.textHeading}>Nucleotide Sequence:</Text>
         </Layout>
         <Text style={{ textAlign: "center" }}>{` ${dnaSequence}`}</Text>
@@ -266,8 +349,8 @@ const InsilicoPCR = () => {
             value={reversePrimer}
           />
         </Layout> */}
-      </ScrollView>
-    </KeyboardAvoidingView>
+			</ScrollView>
+		</KeyboardAvoidingView>
   );
 };
 
