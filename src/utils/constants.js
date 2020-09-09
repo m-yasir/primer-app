@@ -1,1 +1,3 @@
-export const APP_EXPIRY_DATE = new Date(2020, 7, 22)
+import { expo } from "./../../app.json"
+
+export const APP_NAME = expo.name

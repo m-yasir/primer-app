@@ -15,14 +15,6 @@ import AMThermocyclerReaction from "./src/screens/AppMode/ThermocyclerReaction";
 import LMInsilicoPCR from "./src/screens/LiteratureMode/InsilicoPCRLiterature";
 import LMPrimerDesign from "./src/screens/LiteratureMode/PrimerLiterature";
 import LMThermocyclerReaction from "./src/screens/LiteratureMode/ThermocyclerReactionDesign";
-import { APP_EXPIRY_DATE } from "./src/utils/constants"
-
-if (new Date() >= APP_EXPIRY_DATE) {
-  Alert.alert("IMPORTANT", "App has expired please contact the developer", [], {
-    cancelable: false,
-    onDismiss: () => {}
-  })
-}
 
 const styles = StyleSheet.create({
   container: {
