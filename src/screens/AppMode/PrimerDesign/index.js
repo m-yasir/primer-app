@@ -7,9 +7,9 @@ import {
   KeyboardAvoidingView
 } from "react-native";
 import { Text, Layout, Input, Button } from "react-native-ui-kitten";
-import { WrapComponentWithKittenProvider } from "../components/utils/theming";
+import { WrapComponentWithKittenProvider } from "../../../components/utils/theming";
 import { useNavigation } from "react-navigation-hooks";
-import { useMount } from "../components/utils/appUtil";
+import { useMount } from "../../../components/utils/appUtil";
 
 const styles = StyleSheet.create({
   container: {
@@ -27,15 +27,29 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "column",
     margin: 20
+  },
+  textHeadingLayout: {
+    backgroundColor: "#319ede",
+    marginTop: 10,
+    width: "55%",
+    padding: 5,
+    paddingRight: 0
+  },
+  textHeading: {
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 18
   }
 });
 
-const ForwardPrimer = () => {
+const PrimerDesign = () => {
   // Non-states
   const isForward = useRef(true);
   // Component States
   const navigation = useNavigation();
   const [dnaSequence, setDnaSequence] = useState("");
+  const [forwardPrimer, setForwardPrimer] = useState("");
+  const [reversePrimer, setReversePrimer] = useState("");
   const [calculation, setCalculation] = useState(null);
   const [sequenceTerminals, setSequenceTerminals] = useState({
     initial: "",
@@ -50,14 +64,28 @@ const ForwardPrimer = () => {
     return string.split(char).length - 1;
   };
 
-  useMount(() => {
-    isForward.current = navigation.getParam("isForward");
-    const sequenceTerminals = { initial: "5'", end: "3'" };
-    if (!isForward.current) {
-      sequenceTerminals.initial = "3'";
-      sequenceTerminals.end = "5'";
+  const reverseString = str => str.split("").reduce((a, b) => b + a) + "";
+
+  const getSequenceWithTerminals = (primerType, sequence) => {
+    switch (primerType) {
+      case "forward":
+        return `5'${sequence}3'`;
+      case "reverse":
+        return `3'${sequence}5'`;
+      default:
+        return;
     }
-    setSequenceTerminals(sequenceTerminals);
+  };
+
+  useMount(() => {
+    isForward.current = true;
+    // const sequenceTerminals = { initial: "5'", end: "3'" };
+    // if (!isForward.current) {
+    //   sequenceTerminals.initial = "3'";
+    //   sequenceTerminals.end = "5'";
+    // }
+    // setSequenceTerminals(sequenceTerminals);
+    // setDnaSequence(navigation.getParam("DNA") || "");
     setDnaSequence(navigation.getParam("DNA") || "");
   });
 
@@ -106,6 +134,10 @@ const ForwardPrimer = () => {
       getCharCountFromString(slicedSequence, "G") +
       getCharCountFromString(slicedSequence, "C");
     const TM = 4 * GC + 2 * AT;
+    // setForwardPrimer(`5' ${slicedSequence} '3`);
+    setForwardPrimer(slicedSequence);
+    setReversePrimer(calculateSequencing(slicedSequence));
+    // setReversePrimer(`3' ${calculateSequencing(slicedSequence)} '5`);
     setCalculation({
       sequence: slicedSequence,
       AT,
@@ -125,7 +157,10 @@ const ForwardPrimer = () => {
   return (
     <KeyboardAvoidingView>
       <ScrollView style={styles.container}>
-        <Text><Text style={{ fontWeight: "bold" }}>DNA:</Text>{` ${dnaSequence}`}</Text>
+        <Layout style={styles.textHeadingLayout}>
+          <Text style={styles.textHeading}>Nucleotide Sequence:</Text>
+        </Layout>
+        <Text style={{ textAlign: "center" }}>{` ${dnaSequence}`}</Text>
         <Text style={{ marginTop: 5, marginBottom: 5 }}>
           <Text style={{ fontWeight: "bold" }}>Total Nucleotide:</Text>
           {` ${dnaSequence.length}`}
@@ -152,9 +187,41 @@ const ForwardPrimer = () => {
         >
           Calculate
         </Button>
+        <Layout style={styles.textHeadingLayout}>
+          <Text
+            style={{ ...styles.textHeading, width: "70%", textAlign: "center" }}
+          >
+            Forward Primer:
+          </Text>
+        </Layout>
+        <Layout style={styles.fieldsContainer}>
+          <Input
+            disabled
+            style={{
+              minWidth: 200
+            }}
+            // onChangeText={handleInputChange("start")}
+            value={calculation ? forwardPrimer : ""}
+          />
+        </Layout>
+        <Layout style={styles.textHeadingLayout}>
+          <Text
+            style={[styles.textHeading, { width: "70%", textAlign: "center" }]}
+          >
+            Reverse Primer:
+          </Text>
+        </Layout>
+        <Layout style={styles.fieldsContainer}>
+          <Input
+            disabled
+            style={{
+              minWidth: 200
+            }}
+            value={calculation ? reversePrimer : ""}
+          />
+        </Layout>
         {calculation && (
           <Layout style={styles.resultsContainer}>
-            <Text><Text style={{ fontWeight: "bold" }}>Sequence:</Text>{` ${sequenceTerminals.initial} ${calculation.sequence} ${sequenceTerminals.end}`}</Text>
             <Text>{`AT: ${calculation.AT}`}</Text>
             <Text>{`GC: ${calculation.GC}`}</Text>
             <Text>{`Melting Temperature (TM): ${calculation.TM} (${
@@ -163,9 +230,6 @@ const ForwardPrimer = () => {
                 : "Unstable"
             })`}</Text>
             <Text>{`Primer Content: ${calculation.total}`}</Text>
-            {calculation.complementary && (
-              <Text>{`Complementary: 5' ${calculation.complementary} 3'`}</Text>
-            )}
           </Layout>
         )}
       </ScrollView>
@@ -173,18 +237,10 @@ const ForwardPrimer = () => {
   );
 };
 
-const ForwardPrimerContainer = WrapComponentWithKittenProvider(ForwardPrimer);
+const PrimerDesignContainer = WrapComponentWithKittenProvider(PrimerDesign);
 
-ForwardPrimerContainer.navigationOptions = ({ navigation }) => ({
-  title: navigation.getParam("headerTitle"),
-  headerStyle: {
-    backgroundColor: "#319ede"
-  },
-  headerTitleStyle: {
-    fontWeight: "bold",
-    color: "#fff"
-  },
-  headerTintColor: "#fff"
+PrimerDesignContainer.navigationOptions = ({ navigation }) => ({
+  title: navigation.getParam("headerTitle")
 });
 
-export default ForwardPrimerContainer;
+export default PrimerDesignContainer;
