@@ -32,6 +32,12 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
   },
+  seqReqBtns: {
+    width: "40%"
+  },
+  thermBtn: {
+    width: "90%"
+  },
 });
 
 function AppMode() {
@@ -40,7 +46,7 @@ function AppMode() {
 
   // !IMPORTANT: PI = Primer or InsilicoPCR
   const navigateToDesign = (DNA, design) => () => {
-    if (!DNA) {
+    if (!DNA && design !== "thermocycler") {
       Alert.alert("Error", "Enter DNA Sequence!");
       return;
     }
@@ -56,7 +62,7 @@ function AppMode() {
           headerTitle: "Primer Design",
         });
       case "thermocycler":
-        return navigation.navigate("Primer", {
+        return navigation.navigate("AMThermocyclerReaction", {
           DNA: DNA.toUpperCase(),
           headerTitle: "Thermocycler Reaction Design",
         });
@@ -99,7 +105,7 @@ function AppMode() {
           }}
         >
           <Button
-            style={styles.button}
+            style={[styles.button, styles.seqReqBtns]}
             appearance="outline"
             status="primary"
             onPress={navigateToDesign(dnaSequence, "primer")}
@@ -107,7 +113,7 @@ function AppMode() {
             Primer Design
           </Button>
           <Button
-            style={styles.button}
+            style={[styles.button, styles.seqReqBtns]}
             appearance="outline"
             status="primary"
             onPress={navigateToDesign(dnaSequence, "insilico")}
@@ -117,17 +123,16 @@ function AppMode() {
         </Layout>
         <Layout
           style={{
-            flex: 1,
             flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
+            justifyContent: "center",
+            alignItems: "center"
           }}
         >
           <Button
-            style={styles.button}
+            style={[styles.button, styles.thermBtn]}
             appearance="outline"
             status="primary"
-            onPress={navigateToDesign(dnaSequence, "primer")}
+            onPress={navigateToDesign(dnaSequence, "thermocycler")}
           >
             Thermocycler Reaction Design
           </Button>
