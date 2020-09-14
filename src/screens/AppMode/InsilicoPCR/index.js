@@ -5,7 +5,7 @@ import {
 	Keyboard,
 	ScrollView,
 	KeyboardAvoidingView,
-	Dimensions
+	Dimensions,
 } from "react-native";
 import { Text, Layout, Input, Button } from "react-native-ui-kitten";
 import { WrapComponentWithKittenProvider } from "../../../utils/theming";
@@ -19,33 +19,33 @@ const styles = StyleSheet.create({
 		overflow: "scroll",
 		backgroundColor: "#fff",
 		minWidth: width,
-		minHeight: height
+		minHeight: height,
 	},
 	fontSize20: {
-		fontSize: 20
+		fontSize: 20,
 	},
 	fieldsContainer: {
 		display: "flex",
 		flexDirection: "row",
 		justifyContent: "space-between",
 		alignItems: "center",
-		margin: 10
+		margin: 10,
 	},
 	mh5: {
-		marginHorizontal: 5
+		marginHorizontal: 5,
 	},
 	initialInputField: {
 		marginLeft: 10,
-		marginRight: 10
+		marginRight: 10,
 	},
 	resultsContainer: {
 		display: "flex",
 		flexDirection: "column",
-		margin: 20
+		margin: 20,
 	},
 	sequenceCharacter: {
 		paddingHorizontal: 2,
-		paddingVertical: 2
+		paddingVertical: 2,
 	},
 	sequenceContainer: {
 		alignItems: "center",
@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
 		flexWrap: "wrap",
 		justifyContent: "flex-start",
 		marginHorizontal: 5,
-		marginVertical: 10
+		marginVertical: 10,
 	},
 	textHeadingLayout: {
 		backgroundColor: "#319ede",
@@ -63,13 +63,13 @@ const styles = StyleSheet.create({
 		minWidth: "55%",
 		maxWidth: "70%",
 		padding: 5,
-		paddingRight: 0
+		paddingRight: 0,
 	},
 	textHeading: {
 		color: "white",
 		fontWeight: "bold",
-		fontSize: 18
-	}
+		fontSize: 18,
+	},
 });
 
 const InsilicoPCR = () => {
@@ -109,7 +109,7 @@ const InsilicoPCR = () => {
 			return {
 				original,
 				forward,
-				reverse: reverseString(forward)
+				reverse: reverseString(forward),
 			};
 		})()
 	);
@@ -133,7 +133,7 @@ const InsilicoPCR = () => {
 		return React.cloneElement(text, {
 			style: text.props.style.concat(
 				idx >= start && idx <= end ? { backgroundColor: "yellow" } : {}
-			)
+			),
 		});
 	};
 
@@ -167,7 +167,7 @@ const InsilicoPCR = () => {
 			style={[
 				styles.fontSize20,
 				styles.sequenceCharacter,
-				{ color: getSequenceCharColor(char) }
+				{ color: getSequenceCharColor(char) },
 			]}
 		>
 			{char}
@@ -205,12 +205,12 @@ const InsilicoPCR = () => {
 			rpIndices: getBpIndices(
 				dnaSequence.current.forward,
 				reverseString(calculateSequencing(userRP))
-			)
+			),
 		};
 		setSequences(_sequences);
 	};
 
-  // TODO: Break into components
+	// TODO: Break into components
 	return (
 		<KeyboardAvoidingView>
 			<ScrollView style={styles.container}>
@@ -220,7 +220,7 @@ const InsilicoPCR = () => {
 							<Text
 								style={[
 									styles.fontSize20,
-									styles.sequenceCharacter
+									styles.sequenceCharacter,
 								]}
 							>
 								5'
@@ -231,7 +231,7 @@ const InsilicoPCR = () => {
 							<Text
 								style={[
 									styles.fontSize20,
-									styles.sequenceCharacter
+									styles.sequenceCharacter,
 								]}
 							>
 								3'
@@ -241,7 +241,7 @@ const InsilicoPCR = () => {
 							<Text
 								style={[
 									styles.fontSize20,
-									styles.sequenceCharacter
+									styles.sequenceCharacter,
 								]}
 							>
 								3'
@@ -252,7 +252,7 @@ const InsilicoPCR = () => {
 							<Text
 								style={[
 									styles.fontSize20,
-									styles.sequenceCharacter
+									styles.sequenceCharacter,
 								]}
 							>
 								5'
@@ -287,7 +287,7 @@ const InsilicoPCR = () => {
 					</Layout>
 					<Button
 						style={{
-							margin: 10
+							margin: 10,
 						}}
 						appearance="outline"
 						status="primary"
@@ -341,7 +341,7 @@ const InsilicoPCR = () => {
 const InsilicoPCRContainer = WrapComponentWithKittenProvider(InsilicoPCR);
 
 InsilicoPCRContainer.navigationOptions = ({ navigation }) => ({
-	title: navigation.getParam("headerTitle")
+	title: navigation.getParam("headerTitle"),
 });
 
 export default InsilicoPCRContainer;

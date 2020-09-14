@@ -1,10 +1,10 @@
 import React, { useState, useRef } from "react";
 import {
-  StyleSheet,
-  Alert,
-  Keyboard,
-  ScrollView,
-  KeyboardAvoidingView
+	StyleSheet,
+	Alert,
+	Keyboard,
+	ScrollView,
+	KeyboardAvoidingView,
 } from "react-native";
 import { Text, Layout, Input, Button } from "react-native-ui-kitten";
 import { WrapComponentWithKittenProvider } from "../../../utils/theming";
@@ -47,175 +47,183 @@ import { calculatePrimerValues } from "../../../utils/util";
  * @property {AnnealingTemps} annealingTemps
  */
 
- /**
-  * @typedef Form
-  * @property {number} initial
-  * @property {number} subsequent
-  * @property {number} annealTime
-  * @property {number} productSize
-  */
+/**
+ * @typedef Form
+ * @property {number} initial
+ * @property {number} subsequent
+ * @property {number} annealTime
+ * @property {number} productSize
+ */
 const styles = StyleSheet.create({
-  boldFace: {
-    fontWeight: "bold"
-  },
-  container: {
-    margin: 20,
-    overflow: "scroll"
-  },
-  fieldsContainer: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginVertical: 10
-  },
-  resultsContainer: {
-    display: "flex",
-    flexDirection: "column",
-    margin: 20
-  },
-  textHeadingLayout: {
-    backgroundColor: "#319ede",
-    marginTop: 10,
-    width: "55%",
-    padding: 5,
-    paddingRight: 0
-  },
-  textContent: {
-    marginBottom: 2
-  },
-  textContentExtra: {
-    marginBottom: 10
-  },
-  textHeading: {
-    color: "white",
-    fontWeight: "bold",
-    fontSize: 18
-  }
+	boldFace: {
+		fontWeight: "bold",
+	},
+	container: {
+		margin: 20,
+		overflow: "scroll",
+	},
+	fieldsContainer: {
+		display: "flex",
+		flexDirection: "row",
+		justifyContent: "space-between",
+		alignItems: "center",
+		marginVertical: 10,
+	},
+	resultsContainer: {
+		display: "flex",
+		flexDirection: "column",
+		margin: 20,
+	},
+	textHeadingLayout: {
+		backgroundColor: "#319ede",
+		marginTop: 10,
+		width: "55%",
+		padding: 5,
+		paddingRight: 0,
+	},
+	textContent: {
+		marginBottom: 2,
+	},
+	textContentExtra: {
+		marginBottom: 10,
+	},
+	textHeading: {
+		color: "white",
+		fontWeight: "bold",
+		fontSize: 18,
+	},
 });
 
 const ThermocyclerReaction = () => {
-  // Component States
-  const navigation = useNavigation();
-  const [dnaSequence, setDnaSequence] = useState("");
-  /**
-   * @type {[PrimerCalculation | null, React.Dispatch<PrimerCalculation>]}
-   */
-  const [calculation, setCalculation] = useState(null);
-  /**
-   * @type {[Form | null, React.Dispatch<Form>]}
-   */
-  const [formValues, setFormValues] = useState({
-    initial: '2',
-    subsequent: null,
-    annealTime: null,
-    productSize: null
-  });
-  const [primers, setPrimers] = useState({
-    forward: "",
-    reverse: "",
-  })
-  // BEGIN: AFTER calculate states
-  
-  /**
-   * @type {[AnnealProductCalculation | null, React.Dispatch<AnnealProductCalculation | null>]}
-   */
-  const [annealProductSizeCalc, setAnnealProductSizeCalc] = useState(null)
-  // END
+	// Component States
+	const navigation = useNavigation();
+	const [dnaSequence, setDnaSequence] = useState("");
+	/**
+	 * @type {[PrimerCalculation | null, React.Dispatch<PrimerCalculation>]}
+	 */
+	const [calculation, setCalculation] = useState(null);
+	/**
+	 * @type {[Form | null, React.Dispatch<Form>]}
+	 */
+	const [formValues, setFormValues] = useState({
+		initial: "2",
+		subsequent: null,
+		annealTime: null,
+		productSize: null,
+	});
+	const [primers, setPrimers] = useState({
+		forward: "",
+		reverse: "",
+	});
+	// BEGIN: AFTER calculate states
 
-  useMount(() => {
-    // const sequenceTerminals = { initial: "5'", end: "3'" };
-    // if (!isForward.current) {
-    //   sequenceTerminals.initial = "3'";
-    //   sequenceTerminals.end = "5'";
-    // }
-    // setSequenceTerminals(sequenceTerminals);
-    // setDnaSequence(navigation.getParam("DNA") || "");
-    setDnaSequence(navigation.getParam("DNA") || "");
-  });
+	/**
+	 * @type {[AnnealProductCalculation | null, React.Dispatch<AnnealProductCalculation | null>]}
+	 */
+	const [annealProductSizeCalc, setAnnealProductSizeCalc] = useState(null);
+	// END
 
-  /**
-   * @param {number} value
-   * @param {number} min
-   * @param {number} max
-   * @returns {boolean}
-   */
-  const checkRangeNotIncl = (value, min, max) => (value < min || value > max)
+	useMount(() => {
+		// const sequenceTerminals = { initial: "5'", end: "3'" };
+		// if (!isForward.current) {
+		//   sequenceTerminals.initial = "3'";
+		//   sequenceTerminals.end = "5'";
+		// }
+		// setSequenceTerminals(sequenceTerminals);
+		// setDnaSequence(navigation.getParam("DNA") || "");
+		setDnaSequence(navigation.getParam("DNA") || "");
+	});
 
-  /**
-   * @param {number} initial
-   * @param {number} subsqt
-   * @param {string} forwardPrimer
-   * @param {string} reversePrimer 
-   * @returns {() => void}
-   */
-  const calculateValues = (initial, subsqt, forwardPrimer, reversePrimer) => () => {
-    Keyboard.dismiss();
-    if (checkRangeNotIncl(subsqt, 15, 60)) {
-      Alert.alert("Error", "The subsequent Denaturation steps will be between 15 and 60 seconds");
-      return;
-    }
-    const fwdVals = calculatePrimerValues(forwardPrimer, 2);
-    const revVals = calculatePrimerValues(reversePrimer, 2);
-    setCalculation({
-      forward: {
-        GCContent: fwdVals.GC/forwardPrimer.length*100,
-        TM: fwdVals.TM
-      },
-      reverse: {
-        GCContent: revVals.GC/reversePrimer.length*100,
-        TM: revVals.TM
-      }
-    });
-  };
+	/**
+	 * @param {number} value
+	 * @param {number} min
+	 * @param {number} max
+	 * @returns {boolean}
+	 */
+	const checkRangeNotIncl = (value, min, max) => value < min || value > max;
 
-  /**
-   * @param {number} annealingTime
-   * @param {number} tmForwardPrimer 
-   * @param {number} tmReversePrimer 
-   * @param {number} productSize
-   * @returns {() => void}
-   */
-  const calculateAnnealingProduct = (
+	/**
+	 * @param {number} initial
+	 * @param {number} subsqt
+	 * @param {string} forwardPrimer
+	 * @param {string} reversePrimer
+	 * @returns {() => void}
+	 */
+	const calculateValues = (
+		initial,
+		subsqt,
+		forwardPrimer,
+		reversePrimer
+	) => () => {
+		Keyboard.dismiss();
+		if (checkRangeNotIncl(subsqt, 15, 60)) {
+			Alert.alert(
+				"Error",
+				"The subsequent Denaturation steps will be between 15 and 60 seconds"
+			);
+			return;
+		}
+		const fwdVals = calculatePrimerValues(forwardPrimer, 2);
+		const revVals = calculatePrimerValues(reversePrimer, 2);
+		setCalculation({
+			forward: {
+				GCContent: (fwdVals.GC / forwardPrimer.length) * 100,
+				TM: fwdVals.TM,
+			},
+			reverse: {
+				GCContent: (revVals.GC / reversePrimer.length) * 100,
+				TM: revVals.TM,
+			},
+		});
+	};
+
+	/**
+	 * @param {number} annealingTime
+	 * @param {number} tmForwardPrimer
+	 * @param {number} tmReversePrimer
+	 * @param {number} productSize
+	 * @returns {() => void}
+	 */
+	const calculateAnnealingProduct = (
 		annealingTime,
 		tmForwardPrimer,
-    tmReversePrimer,
-    productSize
-  ) => () => {
+		tmReversePrimer,
+		productSize
+	) => () => {
 		if (checkRangeNotIncl(annealingTime, 15, 60)) {
 			Alert.alert(
 				"Error",
 				"Annealing time shoiuld be equal to 15 sec or less than or equal to 1 min"
 			);
 			return;
-    }
-    if (checkRangeNotIncl(productSize, 500, 5000)) {
-      Alert.alert(
-        "Error",
-        "The product size must greater than or equal to 500kb and less than or equal to 5000kb"
-      );
-      return;
-    }
-    setAnnealProductSizeCalc({
-      annealingTemps: {
-        temp1: tmForwardPrimer-5,
-        temp2: tmReversePrimer-5
-      },
-      productSizeExtensionTime: (productSize / 1000).toFixed(1)
-    })
-  };
+		}
+		if (checkRangeNotIncl(productSize, 500, 5000)) {
+			Alert.alert(
+				"Error",
+				"The product size must greater than or equal to 500kb and less than or equal to 5000kb"
+			);
+			return;
+		}
+		setAnnealProductSizeCalc({
+			annealingTemps: {
+				temp1: tmForwardPrimer - 5,
+				temp2: tmReversePrimer - 5,
+			},
+			productSizeExtensionTime: (productSize / 1000).toFixed(1),
+		});
+	};
 
-  /**
-   * @param {string} key 
-   * @param {(value: string | number | (() => number | string)) => void} setValue
-   * @returns {void} none
-   */
-  const handleInputChange = (key, setValue) => value => {
-    setValue((_values) => ({ ..._values, [key]: value }));
-  };
+	/**
+	 * @param {string} key
+	 * @param {(value: string | number | (() => number | string)) => void} setValue
+	 * @returns {void} none
+	 */
+	const handleInputChange = (key, setValue) => (value) => {
+		setValue((_values) => ({ ..._values, [key]: value }));
+	};
 
-  // TODO: Break into components
-  return (
+	// TODO: Break into components
+	return (
 		<KeyboardAvoidingView>
 			<ScrollView style={styles.container}>
 				<Layout style={styles.textHeadingLayout}>
@@ -451,23 +459,25 @@ const ThermocyclerReaction = () => {
 				)}
 			</ScrollView>
 		</KeyboardAvoidingView>
-  );
+	);
 };
 
-const ThermocyclerReactionContainer = WrapComponentWithKittenProvider(ThermocyclerReaction);
+const ThermocyclerReactionContainer = WrapComponentWithKittenProvider(
+	ThermocyclerReaction
+);
 
 // ThermocyclerReactionContainer.navigationOptions = ({ navigation }) => ({
 ThermocyclerReactionContainer.navigationOptions = () => ({
-  // title: navigation.getParam("headerTitle"),
-  title: "Thermocycler Reaction",
-  headerStyle: {
-    backgroundColor: "#319ede"
-  },
-  headerTitleStyle: {
-    fontWeight: "bold",
-    color: "#fff"
-  },
-  headerTintColor: "#fff"
+	// title: navigation.getParam("headerTitle"),
+	title: "Thermocycler Reaction",
+	headerStyle: {
+		backgroundColor: "#319ede",
+	},
+	headerTitleStyle: {
+		fontWeight: "bold",
+		color: "#fff",
+	},
+	headerTintColor: "#fff",
 });
 
 export default ThermocyclerReactionContainer;
