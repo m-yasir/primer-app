@@ -10,6 +10,7 @@ import {
 import { Text, Layout, Input, Button } from "react-native-ui-kitten";
 import { WrapComponentWithKittenProvider } from "../../../utils/theming";
 import { useNavigation } from "react-navigation-hooks";
+import { calculateSequencing, getSequenceCharacter, getSequenceCharColor, getSequencingColorCharacters, reverseString } from "../../../utils/util";
 
 const { width, height } = Dimensions.get("window");
 
@@ -73,32 +74,6 @@ const styles = StyleSheet.create({
 });
 
 const InsilicoPCR = () => {
-	// Functions needed to be initialized earlier and in order due to usage order.
-	const getSequenceCharacter = (char) => {
-		switch (char) {
-			case "5'":
-				return "3'";
-			case "3'":
-				return "5'";
-			case "A":
-				return "T";
-			case "T":
-				return "A";
-			case "C":
-				return "G";
-			case "G":
-				return "C";
-		}
-		return char;
-	};
-
-	const calculateSequencing = (seq) =>
-		seq
-			.split("")
-			.map((char) => getSequenceCharacter(char))
-			.join("");
-
-	const reverseString = (str) => str.split("").reduce((a, b) => b + a) + "";
 	// Nav-hook
 	const navigation = useNavigation();
 	// Non-states
@@ -118,36 +93,12 @@ const InsilicoPCR = () => {
 	const [userRP, setUserRP] = useState("");
 	const [sequences, setSequences] = useState(null);
 
-	// const getCharCountFromString = (string = "", char) => {
-	// 	return string.split(char).length - 1;
-	// };
-
-	const getSequencingColorCharacters = (sequence, isReverse = false) => {
-		return (isReverse ? reverseString(sequence) : sequence)
-			.split("")
-			.map((char) => getSequenceCharacter(char))
-			.map(mapCharacterWithColor);
-	};
-
 	const highlightText = (start, end) => (text, idx) => {
 		return React.cloneElement(text, {
 			style: text.props.style.concat(
 				idx >= start && idx <= end ? { backgroundColor: "yellow" } : {}
 			),
 		});
-	};
-
-	const getSequenceCharColor = (char) => {
-		switch (char) {
-			case "T":
-				return "#d20000";
-			case "A":
-				return "#0200ad";
-			case "G":
-				return "#4a9026";
-			default:
-				return "#000";
-		}
 	};
 
 	/**
@@ -161,6 +112,11 @@ const InsilicoPCR = () => {
 		return [startIdx, endIdx];
 	};
 
+	/**
+	 * @param {string} char 
+	 * @param {number} idx
+	 * @returns {JSX.Element} JSX.Element
+	 */
 	const mapCharacterWithColor = (char, idx) => (
 		<Text
 			key={idx}
@@ -226,7 +182,8 @@ const InsilicoPCR = () => {
 								5'
 							</Text>
 							{getSequencingColorCharacters(
-								dnaSequence.current.forward
+								dnaSequence.current.forward,
+								mapCharacterWithColor
 							)}
 							<Text
 								style={[
@@ -247,7 +204,8 @@ const InsilicoPCR = () => {
 								3'
 							</Text>
 							{getSequencingColorCharacters(
-								dnaSequence.current.reverse
+								dnaSequence.current.reverse,
+								mapCharacterWithColor
 							)}
 							<Text
 								style={[

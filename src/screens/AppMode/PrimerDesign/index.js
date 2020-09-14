@@ -15,6 +15,7 @@ import {
 	getSequenceCharacter,
 	calculatePrimerValues,
 	reverseString,
+	calculateSequencing, getSequenceCharColor, getSequencingColorCharacters
 } from "../../../utils/util";
 /**
  * @typedef PrimerDetail
@@ -42,10 +43,17 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		margin: 10,
 	},
+	fontSize20: {
+		fontSize: 20,
+	},
 	resultsContainer: {
 		display: "flex",
 		flexDirection: "column",
 		margin: 20,
+	},
+	sequenceCharacter: {
+		paddingHorizontal: 2,
+		paddingVertical: 2,
 	},
 	textHeadingLayout: {
 		backgroundColor: "#319ede",
@@ -88,13 +96,24 @@ const PrimerDesign = () => {
 		isForward.current = true;
 		setDnaSequence(navigation.getParam("DNA") || "");
 	});
-
-	const calculateSequencing = (sequence) => {
-		return sequence
-			.split("")
-			.map((char) => getSequenceCharacter(char))
-			.join("");
-	};
+	
+	/**
+	 * @param {string} char 
+	 * @param {number} idx
+	 * @returns {JSX.Element} JSX.Element
+	 */
+	const mapCharacterWithColor = (char, idx) => (
+		<Text
+			key={idx}
+			style={[
+				styles.fontSize20,
+				styles.sequenceCharacter,
+				{ color: getSequenceCharColor(char) },
+			]}
+		>
+			{char}
+		</Text>
+	);
 
 	/**
 	 * @param {number} fwStart
@@ -179,7 +198,7 @@ const PrimerDesign = () => {
 						display: "flex",
 						flexWrap: "wrap",
 					}}
-				>{` ${dnaSequence}`}</Text>
+				>{` ${getSequencingColorCharacters(dnaSequence, mapCharacterWithColor)}`}</Text>
 				<Text style={{ marginTop: 5, marginBottom: 5 }}>
 					<Text style={{ fontWeight: "bold" }}>
 						Total Nucleotide:
@@ -270,7 +289,6 @@ const PrimerDesign = () => {
 								style={{
 									minWidth: 200,
 								}}
-								// onChangeText={handleInputChange("start")}
 								value={calculation ? forwardPrimer : ""}
 							/>
 						</Layout>
