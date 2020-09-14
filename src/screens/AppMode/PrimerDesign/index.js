@@ -57,10 +57,11 @@ const styles = StyleSheet.create({
 	},
 	textHeadingLayout: {
 		backgroundColor: "#319ede",
+		marginBottom: 5,
 		marginTop: 10,
-		width: "55%",
 		padding: 5,
 		paddingRight: 0,
+		width: "55%",
 	},
 	textHeading: {
 		color: "white",
@@ -198,7 +199,12 @@ const PrimerDesign = () => {
 						display: "flex",
 						flexWrap: "wrap",
 					}}
-				>{` ${getSequencingColorCharacters(dnaSequence, mapCharacterWithColor)}`}</Text>
+				>
+					{getSequencingColorCharacters(
+						dnaSequence,
+						mapCharacterWithColor
+					)}
+				</Text>
 				<Text style={{ marginTop: 5, marginBottom: 5 }}>
 					<Text style={{ fontWeight: "bold" }}>
 						Total Nucleotide:
