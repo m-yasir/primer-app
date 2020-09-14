@@ -1,6 +1,6 @@
 import React from "react";
 import { Layout, Button } from "react-native-ui-kitten";
-import { WrapComponentWithKittenProvider } from "../../components/utils/theming";
+import { WrapComponentWithKittenProvider } from "../../utils/theming";
 import { useNavigation } from "react-navigation-hooks";
 
 const useStyles = () => ({

@@ -4,7 +4,7 @@ import { useNavigation } from "react-navigation-hooks";
 
 import { Layout, Text, Input, Button } from "react-native-ui-kitten";
 
-import { WrapComponentWithKittenProvider } from "../../components/utils/theming";
+import { WrapComponentWithKittenProvider } from "../../utils/theming";
 
 const styles = StyleSheet.create({
   container: {

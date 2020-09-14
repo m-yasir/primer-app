@@ -5,7 +5,7 @@ import { useNavigation } from "react-navigation-hooks";
 
 import { Layout, Button } from "react-native-ui-kitten";
 import { createStackNavigator } from "react-navigation-stack";
-import { WrapComponentWithKittenProvider } from "./src/components/utils/theming";
+import { WrapComponentWithKittenProvider } from "./src/utils/theming";
 
 import AppMode from "./src/screens/AppMode";
 import LiteratureMode from "./src/screens/LiteratureMode";

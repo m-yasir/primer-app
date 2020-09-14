@@ -1,6 +1,6 @@
 import React from "react";
 
-import { WrapComponentWithKittenProvider } from "../../../components/utils/theming";
+import { WrapComponentWithKittenProvider } from "../../../utils/theming";
 import LiteratureModeTemplate from "../../../components/literatureModeTemplate";
 
 const content = [

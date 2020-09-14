@@ -7,9 +7,29 @@ import {
   KeyboardAvoidingView
 } from "react-native";
 import { Text, Layout, Input, Button } from "react-native-ui-kitten";
-import { WrapComponentWithKittenProvider } from "../../../components/utils/theming";
+import { WrapComponentWithKittenProvider } from "../../../utils/theming";
 import { useNavigation } from "react-navigation-hooks";
-import { useMount } from "../../../components/utils/appUtil";
+import { useMount } from "../../../utils/appUtil";
+import {
+	getSequenceWithTerminals,
+	getCharCountFromString,
+	getSequenceCharacter,
+	calculatePrimerValues,
+	reverseString,
+} from "../../../utils/util";
+/**
+ * @typedef PrimerDetail
+ * @property {number} AT
+ * @property {number} GC
+ * @property {number} TM
+ * @property {string} total
+ */
+
+/**
+ * @typedef PrimerCalculation
+ * @property {PrimerDetail} fwdDetails
+ * @property {PrimerDetail} revDetails
+ */
 
 const styles = StyleSheet.create({
   container: {
@@ -50,32 +70,20 @@ const PrimerDesign = () => {
   const [dnaSequence, setDnaSequence] = useState("");
   const [forwardPrimer, setForwardPrimer] = useState("");
   const [reversePrimer, setReversePrimer] = useState("");
+  /**
+   * @type {[PrimerCalculation | null, React.Dispatch<PrimerCalculation>]}
+   */
   const [calculation, setCalculation] = useState(null);
   const [sequenceTerminals, setSequenceTerminals] = useState({
     initial: "",
     end: ""
   });
   const [formValues, setFormValues] = useState({
-    start: "1",
-    end: null
+    fwStart: "1",
+    fwEnd: null,
+    revStart: "-1",
+    revEnd: null
   });
-
-  const getCharCountFromString = (string = "", char) => {
-    return string.split(char).length - 1;
-  };
-
-  const reverseString = str => str.split("").reduce((a, b) => b + a) + "";
-
-  const getSequenceWithTerminals = (primerType, sequence) => {
-    switch (primerType) {
-      case "forward":
-        return `5'${sequence}3'`;
-      case "reverse":
-        return `3'${sequence}5'`;
-      default:
-        return;
-    }
-  };
 
   useMount(() => {
     isForward.current = true;
@@ -89,25 +97,6 @@ const PrimerDesign = () => {
     setDnaSequence(navigation.getParam("DNA") || "");
   });
 
-  const getSequenceCharacter = char => {
-    switch (char) {
-      case "5'":
-        return "3'";
-      case "3'":
-        return "5'";
-      case "A":
-        return "T";
-      case "T":
-        return "A";
-      case "C":
-        return "G";
-      case "G":
-        return "C";
-      default:
-        return char;
-    }
-  };
-
   const calculateSequencing = sequence => {
     return sequence
       .split("")
@@ -115,38 +104,58 @@ const PrimerDesign = () => {
       .join("");
   };
 
-  calculateValues = (sliceStart, sliceEnd) => () => {
+  /**
+   * @param {number} fwStart
+   * @param {number} fwEnd
+   * @param {number} revStart
+   * @param {number} revEnd
+   * @returns{() => void}
+   */
+  const calculateValues = (fwStart, fwEnd, revStart, revEnd) => () => {
     Keyboard.dismiss();
-    --sliceStart;
+    --fwStart;
     if (
-      sliceEnd <= sliceStart ||
-      sliceEnd > dnaSequence.length ||
-      sliceEnd > 24
+      fwEnd <= fwStart ||
+      fwEnd > dnaSequence.length ||
+      fwEnd > 30
     ) {
-      Alert.alert("Error", "Invalid Slicing!");
+      Alert.alert("Error", "Invalid Forward Primer Range!");
       return;
     }
-    const slicedSequence = dnaSequence.slice(sliceStart, sliceEnd);
-    const AT =
-      getCharCountFromString(slicedSequence, "A") +
-      getCharCountFromString(slicedSequence, "T");
-    const GC =
-      getCharCountFromString(slicedSequence, "G") +
-      getCharCountFromString(slicedSequence, "C");
-    const TM = 4 * GC + 2 * AT;
-    // setForwardPrimer(`5' ${slicedSequence} '3`);
-    setForwardPrimer(slicedSequence);
-    setReversePrimer(calculateSequencing(slicedSequence));
-    // setReversePrimer(`3' ${calculateSequencing(slicedSequence)} '5`);
+    if (revStart >= 0 || revEnd >= 0 || revStart <= revEnd || revEnd < -30) {
+      Alert.alert("Error", "Invalid Reverse Primer Range!");
+      return;
+    }
+    const slicedSequence = dnaSequence.slice(fwStart, fwEnd);
+    const slicedRevSequence = reverseString(dnaSequence).slice(
+		  revEnd + slicedSequence.length,
+		  revStart + slicedSequence.length
+    );
+    const fwdPrimerDetail = calculatePrimerValues(slicedSequence)
+    const revPrimerDetail = calculatePrimerValues(slicedRevSequence)
+
+    // Set Forward and Reverse Primers to display after calc in their respective fields
+    setForwardPrimer(getSequenceWithTerminals("forward", slicedSequence));
+    setReversePrimer(getSequenceWithTerminals("reverse", calculateSequencing(slicedRevSequence)));
+
+    // Set `calculation state` for showing them up after values are calculated
     setCalculation({
-      sequence: slicedSequence,
-      AT,
-      GC,
-      TM,
-      total: ((GC / slicedSequence.length) * 100).toFixed(1),
-      complementary: isForward.current
-        ? null
-        : calculateSequencing(slicedSequence)
+      // sequence: slicedSequence,
+      fwdDetails: {
+        AT: fwdPrimerDetail.AT,
+        GC: fwdPrimerDetail.GC,
+        TM: fwdPrimerDetail.TM,
+        total: ((fwdPrimerDetail.GC / slicedSequence.length) * 100).toFixed(1)
+      },
+      revDetails: {
+        AT: revPrimerDetail.AT,
+        GC: revPrimerDetail.GC,
+        TM: revPrimerDetail.TM,
+        total: ((revPrimerDetail.GC / slicedRevSequence.length) * 100).toFixed(1)
+      },
+      // complementary: isForward.current
+      //   ? null
+      //   : calculateSequencing(slicedSequence)
     });
   };
 
@@ -154,54 +163,40 @@ const PrimerDesign = () => {
     setFormValues({ ...formValues, [key]: value });
   };
 
+  // TODO: Break into components
   return (
     <KeyboardAvoidingView>
       <ScrollView style={styles.container}>
         <Layout style={styles.textHeadingLayout}>
           <Text style={styles.textHeading}>Nucleotide Sequence:</Text>
         </Layout>
-        <Text style={{ textAlign: "center" }}>{` ${dnaSequence}`}</Text>
+        <Text style={{ textAlign: "center", display: "flex", flexWrap: "wrap" }}>{` ${dnaSequence}`}</Text>
         <Text style={{ marginTop: 5, marginBottom: 5 }}>
           <Text style={{ fontWeight: "bold" }}>Total Nucleotide:</Text>
           {` ${dnaSequence.length}`}
         </Text>
-        <Layout style={styles.fieldsContainer}>
-          <Input
-            keyboardType="numeric"
-            value={formValues.start}
-            disabled
-            onChangeText={handleInputChange("start")}
-            placeholder="Enter DNA Start"
-          />
-          <Input
-            keyboardType="numeric"
-            value={formValues.end}
-            onChangeText={handleInputChange("end")}
-            placeholder="Enter DNA End"
-          />
-        </Layout>
-        <Button
-          appearance="outline"
-          status="primary"
-          onPress={calculateValues(+formValues.start, +formValues.end)}
-        >
-          Calculate
-        </Button>
         <Layout style={styles.textHeadingLayout}>
           <Text
-            style={{ ...styles.textHeading, width: "70%", textAlign: "center" }}
+            style={[styles.textHeading, { width: "70%", textAlign: "center" }]}
           >
             Forward Primer:
           </Text>
         </Layout>
         <Layout style={styles.fieldsContainer}>
           <Input
+            keyboardType="numeric"
+            label="Start"
+            value={formValues.fwStart}
             disabled
-            style={{
-              minWidth: 200
-            }}
-            // onChangeText={handleInputChange("start")}
-            value={calculation ? forwardPrimer : ""}
+            onChangeText={handleInputChange("fwStart")}
+            placeholder="Enter DNA Start"
+          />
+          <Input
+            keyboardType="numeric"
+            label="End"
+            value={formValues.fwEnd}
+            onChangeText={handleInputChange("fwEnd")}
+            placeholder="Enter DNA End"
           />
         </Layout>
         <Layout style={styles.textHeadingLayout}>
@@ -213,25 +208,84 @@ const PrimerDesign = () => {
         </Layout>
         <Layout style={styles.fieldsContainer}>
           <Input
-            disabled
-            style={{
-              minWidth: 200
-            }}
-            value={calculation ? reversePrimer : ""}
+            keyboardType="numeric"
+            label="Start (negative)"
+            value={formValues.revStart}
+            onChangeText={handleInputChange("revStart")}
+            placeholder="Enter DNA Start"
+          />
+          <Input
+            keyboardType="numeric"
+            label="End (negative)"
+            value={formValues.revEnd}
+            onChangeText={handleInputChange("revEnd")}
+            placeholder="Enter DNA End"
           />
         </Layout>
-        {calculation && (
+        <Button
+          appearance="outline"
+          status="primary"
+          onPress={calculateValues(+formValues.fwStart, +formValues.fwEnd, +formValues.revStart, +formValues.revEnd)}
+        >
+          Calculate
+        </Button>
+        {calculation && 
+        <React.Fragment>
+          <Layout style={styles.textHeadingLayout}>
+            <Text
+              style={{ ...styles.textHeading, width: "70%", textAlign: "center" }}
+            >
+              Forward Primer:
+            </Text>
+          </Layout>
+          <Layout style={styles.fieldsContainer}>
+            <Input
+              disabled
+              style={{
+                minWidth: 200
+              }}
+              // onChangeText={handleInputChange("start")}
+              value={calculation ? forwardPrimer : ""}
+            />
+          </Layout>
           <Layout style={styles.resultsContainer}>
-            <Text>{`AT: ${calculation.AT}`}</Text>
-            <Text>{`GC: ${calculation.GC}`}</Text>
-            <Text>{`Melting Temperature (TM): ${calculation.TM} (${
-              calculation.TM >= 55 && calculation.TM <= 65
+            <Text>{`AT: ${calculation.fwdDetails.AT}`}</Text>
+            <Text>{`GC: ${calculation.fwdDetails.GC}`}</Text>
+            <Text>{`Melting Temperature (TM): ${calculation.fwdDetails.TM} (${
+              calculation.fwdDetails.TM >= 55 && calculation.fwdDetails.TM <= 65
                 ? "Stable"
                 : "Unstable"
             })`}</Text>
-            <Text>{`Primer Content: ${calculation.total}`}</Text>
+            <Text>{`Primer Content: ${calculation.fwdDetails.total}`}</Text>
           </Layout>
-        )}
+          <Layout style={styles.textHeadingLayout}>
+            <Text
+              style={[styles.textHeading, { width: "70%", textAlign: "center" }]}
+            >
+              Reverse Primer:
+            </Text>
+          </Layout>
+          <Layout style={styles.fieldsContainer}>
+            <Input
+              disabled
+              style={{
+                minWidth: 200
+              }}
+              value={calculation ? reversePrimer : ""}
+            />
+          </Layout>
+          <Layout style={styles.resultsContainer}>
+            <Text>{`AT: ${calculation.revDetails.AT}`}</Text>
+            <Text>{`GC: ${calculation.revDetails.GC}`}</Text>
+            <Text>{`Melting Temperature (TM): ${calculation.revDetails.TM} (${
+              calculation.revDetails.TM >= 55 && calculation.revDetails.TM <= 65
+                ? "Stable"
+                : "Unstable"
+            })`}</Text>
+            <Text>{`Primer Content: ${calculation.revDetails.total}`}</Text>
+          </Layout>
+        </React.Fragment>
+        }
       </ScrollView>
     </KeyboardAvoidingView>
   );

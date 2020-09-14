@@ -7,9 +7,10 @@ import {
   KeyboardAvoidingView
 } from "react-native";
 import { Text, Layout, Input, Button } from "react-native-ui-kitten";
-import { WrapComponentWithKittenProvider } from "../../../components/utils/theming";
+import { WrapComponentWithKittenProvider } from "../../../utils/theming";
 import { useNavigation } from "react-navigation-hooks";
-import { useMount } from "../../../components/utils/appUtil";
+import { useMount } from "../../../utils/appUtil";
+import { calculatePrimerValues } from "../../../utils/util";
 
 /**
  * { AT: number, GC: number, TM: number }
@@ -122,10 +123,6 @@ const ThermocyclerReaction = () => {
   const [annealProductSizeCalc, setAnnealProductSizeCalc] = useState(null)
   // END
 
-  const getCharCountFromString = (string = "", char) => {
-    return string.split(char).length - 1;
-  };
-
   useMount(() => {
     // const sequenceTerminals = { initial: "5'", end: "3'" };
     // if (!isForward.current) {
@@ -137,25 +134,6 @@ const ThermocyclerReaction = () => {
     setDnaSequence(navigation.getParam("DNA") || "");
   });
 
-  const getSequenceCharacter = char => {
-    switch (char) {
-      case "5'":
-        return "3'";
-      case "3'":
-        return "5'";
-      case "A":
-        return "T";
-      case "T":
-        return "A";
-      case "C":
-        return "G";
-      case "G":
-        return "C";
-      default:
-        return char;
-    }
-  };
-  
   /**
    * @param {number} value
    * @param {number} min
@@ -163,20 +141,6 @@ const ThermocyclerReaction = () => {
    * @returns {boolean}
    */
   const checkRangeNotIncl = (value, min, max) => (value < min || value > max)
-
-  /**
-   * @param {string} sequence
-   * @returns {PrimerDetail}
-   */
-  const calculatePrimerValues = (sequence) => {
-    const AT =
-      getCharCountFromString(sequence, "A") +
-      getCharCountFromString(sequence, "T");
-    const GC =
-      getCharCountFromString(sequence, "G") +
-      getCharCountFromString(sequence, "C");
-    return { AT, GC, TM: 2*GC+2*AT }
-  }
 
   /**
    * @param {number} initial
@@ -191,8 +155,8 @@ const ThermocyclerReaction = () => {
       Alert.alert("Error", "The subsequent Denaturation steps will be between 15 and 60 seconds");
       return;
     }
-    const fwdVals = calculatePrimerValues(forwardPrimer);
-    const revVals = calculatePrimerValues(reversePrimer);
+    const fwdVals = calculatePrimerValues(forwardPrimer, 2);
+    const revVals = calculatePrimerValues(reversePrimer, 2);
     setCalculation({
       forward: {
         GCContent: fwdVals.GC/forwardPrimer.length*100,
@@ -250,6 +214,7 @@ const ThermocyclerReaction = () => {
     setValue((_values) => ({ ..._values, [key]: value }));
   };
 
+  // TODO: Break into components
   return (
 		<KeyboardAvoidingView>
 			<ScrollView style={styles.container}>
@@ -379,11 +344,6 @@ const ThermocyclerReaction = () => {
 								>{`GC Content Reverse Complementary Primer: `}</Text>
 								<Text>{`${calculation.reverse.GCContent}`}</Text>
 							</Text>
-							{/* <Text>{`Melting Temperature (TM) Forward Primer: ${calculation.TM} (${
-              calculation.TM >= 55 && calculation.TM <= 65
-                ? "Stable"
-                : "Unstable"
-            })`}</Text> */}
 							<Text style={styles.textContent}>
 								<Text
 									style={styles.boldFace}
@@ -396,7 +356,6 @@ const ThermocyclerReaction = () => {
 								>{`Melting Temperature (TM) Reverse Complementary Primer: `}</Text>
 								<Text>{`${calculation.reverse.TM}`}</Text>
 							</Text>
-							{/* <Text>{`Primer Content: ${calculation.total}`}</Text> */}
 							<React.Fragment>
 								<Layout style={styles.textHeadingLayout}>
 									<Text

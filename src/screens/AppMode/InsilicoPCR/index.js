@@ -8,7 +8,7 @@ import {
 	Dimensions
 } from "react-native";
 import { Text, Layout, Input, Button } from "react-native-ui-kitten";
-import { WrapComponentWithKittenProvider } from "../../../components/utils/theming";
+import { WrapComponentWithKittenProvider } from "../../../utils/theming";
 import { useNavigation } from "react-navigation-hooks";
 
 const { width, height } = Dimensions.get("window");
@@ -51,6 +51,7 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		display: "flex",
 		flexDirection: "row",
+		flexWrap: "wrap",
 		justifyContent: "flex-start",
 		marginHorizontal: 5,
 		marginVertical: 10
@@ -209,6 +210,7 @@ const InsilicoPCR = () => {
 		setSequences(_sequences);
 	};
 
+  // TODO: Break into components
 	return (
 		<KeyboardAvoidingView>
 			<ScrollView style={styles.container}>
