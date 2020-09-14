@@ -12,7 +12,6 @@ import { useNavigation } from "react-navigation-hooks";
 import { useMount } from "../../../utils/appUtil";
 import {
 	getSequenceWithTerminals,
-	getCharCountFromString,
 	getSequenceCharacter,
 	calculatePrimerValues,
 	reverseString,
@@ -87,13 +86,6 @@ const PrimerDesign = () => {
 
 	useMount(() => {
 		isForward.current = true;
-		// const sequenceTerminals = { initial: "5'", end: "3'" };
-		// if (!isForward.current) {
-		//   sequenceTerminals.initial = "3'";
-		//   sequenceTerminals.end = "5'";
-		// }
-		// setSequenceTerminals(sequenceTerminals);
-		// setDnaSequence(navigation.getParam("DNA") || "");
 		setDnaSequence(navigation.getParam("DNA") || "");
 	});
 
@@ -122,15 +114,17 @@ const PrimerDesign = () => {
 			revStart >= 0 ||
 			revEnd >= 0 ||
 			revStart <= revEnd ||
-			revEnd < -30
+			revEnd < -dnaSequence.length
 		) {
 			Alert.alert("Error", "Invalid Reverse Primer Range!");
 			return;
 		}
-		const slicedSequence = dnaSequence.slice(fwStart, fwEnd);
-		const slicedRevSequence = reverseString(dnaSequence).slice(
-			revEnd + slicedSequence.length,
-			revStart + slicedSequence.length
+		const slicedSequence = dnaSequence.slice(fwStart, fwEnd + 1);
+		const slicedRevSequence = calculateSequencing(
+			reverseString(dnaSequence).slice(
+				revEnd + dnaSequence.length,
+				revStart + dnaSequence.length + 1
+			)
 		);
 		const fwdPrimerDetail = calculatePrimerValues(slicedSequence);
 		const revPrimerDetail = calculatePrimerValues(slicedRevSequence);
@@ -138,12 +132,9 @@ const PrimerDesign = () => {
 		// Set Forward and Reverse Primers to display after calc in their respective fields
 		setForwardPrimer(getSequenceWithTerminals("forward", slicedSequence));
 		setReversePrimer(
-			getSequenceWithTerminals(
-				"reverse",
-				calculateSequencing(slicedRevSequence)
-			)
+			getSequenceWithTerminals("reverse", slicedRevSequence)
 		);
-
+		// calculateSequencing(slicedRevSequence)
 		// Set `calculation state` for showing them up after values are calculated
 		setCalculation({
 			// sequence: slicedSequence,
@@ -169,7 +160,7 @@ const PrimerDesign = () => {
 			//   ? null
 			//   : calculateSequencing(slicedSequence)
 		});
-	};
+	};;
 
 	const handleInputChange = (key) => (value) => {
 		setFormValues({ ...formValues, [key]: value });
@@ -252,10 +243,10 @@ const PrimerDesign = () => {
 					appearance="outline"
 					status="primary"
 					onPress={calculateValues(
-						+formValues.fwStart,
-						+formValues.fwEnd,
-						+formValues.revStart,
-						+formValues.revEnd
+						parseInt(formValues.fwStart),
+						parseInt(formValues.fwEnd),
+						parseInt(formValues.revStart),
+						parseInt(formValues.revEnd)
 					)}
 				>
 					Calculate
