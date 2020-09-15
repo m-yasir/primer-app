@@ -16,11 +16,12 @@ import LMInsilicoPCR from "./src/screens/LiteratureMode/InsilicoPCRLiterature";
 import LMPrimerDesign from "./src/screens/LiteratureMode/PrimerLiterature";
 import LMThermocyclerReaction from "./src/screens/LiteratureMode/ThermocyclerReactionDesign";
 import { APP_EXPIRY_DATE } from "./src/utils/constants";
+import { author } from "./package.json"
 
 if (new Date() >= APP_EXPIRY_DATE) {
 	Alert.alert(
 		"IMPORTANT",
-		"App has expired please contact the developer",
+		`Expo: App has expired please contact the developer, ${author.name}`,
 		[],
 		{
 			cancelable: false,
@@ -124,7 +125,7 @@ function MainScreen() {
 					status="primary"
 					onPress={navigateToScreen("appmode")}
 				>
-					App Mode
+					Tool Mode
 				</Button>
 			</Layout>
 			{/* </ImageBackground> */}
@@ -153,7 +154,7 @@ const MainNavigator = createStackNavigator(
 		Home: {
 			screen: MainScreenContainer,
 		},
-		AppMode: {
+		AppMode: { // TODO: Rename to Tool Mode
 			screen: AppMode,
 		},
 		AMPrimerDesign: {

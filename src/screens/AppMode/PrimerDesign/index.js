@@ -139,9 +139,9 @@ const PrimerDesign = () => {
 			Alert.alert("Error", "Invalid Reverse Primer Range!");
 			return;
 		}
-		const slicedSequence = dnaSequence.slice(fwStart, fwEnd + 1);
-		const slicedRevSequence = calculateSequencing(
-			reverseString(dnaSequence).slice(
+		const slicedSequence = dnaSequence.slice(fwStart, fwEnd);
+		const slicedRevSequence = reverseString(
+			calculateSequencing(dnaSequence).slice(
 				revEnd + dnaSequence.length,
 				revStart + dnaSequence.length + 1
 			)
@@ -295,7 +295,7 @@ const PrimerDesign = () => {
 								style={{
 									minWidth: 200,
 								}}
-								value={calculation ? forwardPrimer : ""}
+								value={forwardPrimer}
 							/>
 						</Layout>
 						<Layout style={styles.resultsContainer}>
@@ -327,7 +327,7 @@ const PrimerDesign = () => {
 								style={{
 									minWidth: 200,
 								}}
-								value={calculation ? reversePrimer : ""}
+								value={reversePrimer}
 							/>
 						</Layout>
 						<Layout style={styles.resultsContainer}>

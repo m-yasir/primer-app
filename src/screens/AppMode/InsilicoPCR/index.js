@@ -84,7 +84,7 @@ const InsilicoPCR = () => {
 			return {
 				original,
 				forward,
-				reverse: reverseString(forward),
+				// reverse: reverseString(forward),
 			};
 		})()
 	);
@@ -155,12 +155,12 @@ const InsilicoPCR = () => {
 		}
 		const _sequences = {
 			fpIndices: getBpIndices(
-				dnaSequence.current.forward,
+				dnaSequence.current.original,
 				calculateSequencing(userFP)
 			),
 			rpIndices: getBpIndices(
 				dnaSequence.current.forward,
-				reverseString(calculateSequencing(userRP))
+				calculateSequencing(userRP)
 			),
 		};
 		setSequences(_sequences);
@@ -182,7 +182,7 @@ const InsilicoPCR = () => {
 								5'
 							</Text>
 							{getSequencingColorCharacters(
-								dnaSequence.current.forward,
+								dnaSequence.current.original,
 								mapCharacterWithColor
 							)}
 							<Text
@@ -204,7 +204,7 @@ const InsilicoPCR = () => {
 								3'
 							</Text>
 							{getSequencingColorCharacters(
-								dnaSequence.current.reverse,
+								dnaSequence.current.forward,
 								mapCharacterWithColor
 							)}
 							<Text
@@ -260,20 +260,20 @@ const InsilicoPCR = () => {
 							<Layout style={styles.sequenceContainer}>
 								<Text style={styles.fontSize20}>5'</Text>
 								{getHighlightedSequence(
-									dnaSequence.current.forward,
+									dnaSequence.current.original,
 									sequences.fpIndices[0],
 									sequences.fpIndices[1]
 								)}
 								<Text style={styles.fontSize20}>3'</Text>
 							</Layout>
 							<Layout style={styles.sequenceContainer}>
-								<Text style={styles.fontSize20}>3'</Text>
+								<Text style={styles.fontSize20}>5'</Text>
 								{getHighlightedSequence(
-									dnaSequence.current.reverse,
+									dnaSequence.current.forward,
 									sequences.rpIndices[0],
 									sequences.rpIndices[1]
 								)}
-								<Text style={styles.fontSize20}>5'</Text>
+								<Text style={styles.fontSize20}>3'</Text>
 							</Layout>
 							{/* Product Size */}
 							<Layout>
