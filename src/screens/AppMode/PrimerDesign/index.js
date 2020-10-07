@@ -34,7 +34,7 @@ import {
 
 const styles = StyleSheet.create({
 	container: {
-		margin: 20,
+		margin: 10,
 		overflow: "scroll",
 	},
 	fieldsContainer: {
@@ -76,17 +76,22 @@ const PrimerDesign = () => {
 	const isForward = useRef(true);
 	// Component States
 	const navigation = useNavigation();
+	/**
+	 * @type {[string | undefined, React.Dispatch<string>]}
+	 */
 	const [dnaSequence, setDnaSequence] = useState("");
+	/**
+	 * @type {[string | undefined, React.Dispatch<string>]}
+	 */
 	const [forwardPrimer, setForwardPrimer] = useState("");
+	/**
+	 * @type {[string | undefined, React.Dispatch<string>]}
+	 */
 	const [reversePrimer, setReversePrimer] = useState("");
 	/**
 	 * @type {[PrimerCalculation | null, React.Dispatch<PrimerCalculation>]}
 	 */
 	const [calculation, setCalculation] = useState(null);
-	const [sequenceTerminals, setSequenceTerminals] = useState({
-		initial: "",
-		end: "",
-	});
 	const [formValues, setFormValues] = useState({
 		fwStart: "1",
 		fwEnd: null,
