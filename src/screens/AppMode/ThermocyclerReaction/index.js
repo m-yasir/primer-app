@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
 		fontWeight: "bold",
 	},
 	container: {
-		margin: 20,
+		margin: 10,
 		overflow: "scroll",
 	},
 	fieldsContainer: {
