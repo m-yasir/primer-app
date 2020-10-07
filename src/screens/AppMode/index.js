@@ -54,7 +54,7 @@ function AppMode() {
       case "insilico":
         return navigation.navigate("AMInsilcoPCR", {
           DNA: DNA.toUpperCase(),
-          headerTitle: "Insilico PCR Design",
+          headerTitle: "Insilico PCR",
         });
       case "primer":
         return navigation.navigate("AMPrimerDesign", {

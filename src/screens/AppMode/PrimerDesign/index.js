@@ -5,6 +5,7 @@ import {
 	Keyboard,
 	ScrollView,
 	KeyboardAvoidingView,
+	View
 } from "react-native";
 import { Text, Layout, Input, Button } from "react-native-ui-kitten";
 import { WrapComponentWithKittenProvider } from "../../../utils/theming";
@@ -193,18 +194,21 @@ const PrimerDesign = () => {
 				<Layout style={styles.textHeadingLayout}>
 					<Text style={styles.textHeading}>Nucleotide Sequence:</Text>
 				</Layout>
-				<Text
+				<View
 					style={{
 						textAlign: "center",
+						flexDirection: "row",
 						display: "flex",
 						flexWrap: "wrap",
 					}}
 				>
+					<Text style={[styles.fontSize20, styles.sequenceCharacter]}>5'</Text>
 					{getSequencingColorCharacters(
 						dnaSequence,
 						mapCharacterWithColor
 					)}
-				</Text>
+					<Text style={[styles.fontSize20, styles.sequenceCharacter]}>3'</Text>
+				</View>
 				<Text style={{ marginTop: 5, marginBottom: 5 }}>
 					<Text style={{ fontWeight: "bold" }}>
 						Total Nucleotide:
