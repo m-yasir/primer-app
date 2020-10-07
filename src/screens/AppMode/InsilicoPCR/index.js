@@ -1,29 +1,33 @@
 import React, { useState, useRef } from "react";
 import {
-	StyleSheet,
 	Alert,
-	Keyboard,
-	ScrollView,
+	// Dimensions,
 	KeyboardAvoidingView,
-	Dimensions,
+	ScrollView,
+	StyleSheet,
+	View,
 } from "react-native";
 import { Text, Layout, Input, Button } from "react-native-ui-kitten";
 import { WrapComponentWithKittenProvider } from "../../../utils/theming";
 import { useNavigation } from "react-navigation-hooks";
-import { calculateSequencing, getSequenceCharacter, getSequenceCharColor, getSequencingColorCharacters, reverseString } from "../../../utils/util";
+import {
+	calculateSequencing,
+	getSequenceCharColor,
+	getSequencingColorCharacters,
+} from "../../../utils/util";
 
-const { width, height } = Dimensions.get("window");
+// const { width, height } = Dimensions.get("window");
 
 const styles = StyleSheet.create({
 	container: {
-		// margin: 20,
+		margin: 10,
 		overflow: "scroll",
-		backgroundColor: "#fff",
-		minWidth: width,
-		minHeight: height,
+		// backgroundColor: "#fff",
+		// minWidth: width,
+		// minHeight: height,
 	},
-	fontSize20: {
-		fontSize: 20,
+	bold: {
+		fontWeight: "bold",
 	},
 	fieldsContainer: {
 		display: "flex",
@@ -32,10 +36,20 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		margin: 10,
 	},
+	flexRow: {
+		alignItems: "center",
+		display: "flex",
+		flexDirection: "row",
+	},
+	fontSize20: {
+		fontSize: 20,
+	},
 	mh5: {
 		marginHorizontal: 5,
 	},
 	initialInputField: {
+		alignItems: "center",
+		display: "flex",
 		marginLeft: 10,
 		marginRight: 10,
 	},
@@ -75,8 +89,9 @@ const styles = StyleSheet.create({
 
 const InsilicoPCR = () => {
 	// Nav-hook
-	const navigation = useNavigation();
+	const navigation = useNavigation()
 	// Non-states
+	/** @type {React.MutableRefObject<{ original: string, forward: string }>} */
 	const dnaSequence = useRef(
 		(() => {
 			const original = navigation.getParam("DNA");
@@ -92,6 +107,10 @@ const InsilicoPCR = () => {
 	const [userFP, setUserFP] = useState("");
 	const [userRP, setUserRP] = useState("");
 	const [sequences, setSequences] = useState(null);
+	/**
+	 * @type {[ScrollView | undefined, React.Dispatch<ScrollView>]}
+	 */
+	const [scrollViewRef, setScrollViewRef] = useState();
 
 	const highlightText = (start, end) => (text, idx) => {
 		return React.cloneElement(text, {
@@ -113,7 +132,7 @@ const InsilicoPCR = () => {
 	};
 
 	/**
-	 * @param {string} char 
+	 * @param {string} char
 	 * @param {number} idx
 	 * @returns {JSX.Element} JSX.Element
 	 */
@@ -145,6 +164,11 @@ const InsilicoPCR = () => {
 	};
 
 	// TODO: For hint use ALERT :D
+	/**
+	 * Calculates and sets up main sequences and scrolls view to the bottom
+	 * @param {React.RefObject<ScrollView>} scrollViewRef
+	 * @returns {void}
+	 */
 	const setMainSequences = () => {
 		if (!userFP || !userRP) {
 			Alert.alert(
@@ -164,79 +188,89 @@ const InsilicoPCR = () => {
 			),
 		};
 		setSequences(_sequences);
+		setTimeout(() => {
+			scrollViewRef.scrollToEnd({ animated: true });
+		});
 	};
+	/**
+	 * 
+	 * @param {ScrollView | undefined} ref 
+	 */
+	const handleScrollViewRef = (ref) => {
+		if (ref && !scrollViewRef) {
+			setScrollViewRef(ref)
+		}
+	}
 
 	// TODO: Break into components
 	return (
 		<KeyboardAvoidingView>
-			<ScrollView style={styles.container}>
+			<ScrollView ref={handleScrollViewRef} style={styles.container}>
 				<Layout style={styles.mh5}>
-					<Layout>
-						<Layout style={styles.sequenceContainer}>
-							<Text
-								style={[
-									styles.fontSize20,
-									styles.sequenceCharacter,
-								]}
-							>
-								5'
-							</Text>
-							{getSequencingColorCharacters(
-								dnaSequence.current.original,
-								mapCharacterWithColor
-							)}
-							<Text
-								style={[
-									styles.fontSize20,
-									styles.sequenceCharacter,
-								]}
-							>
-								3'
-							</Text>
-						</Layout>
-						<Layout style={styles.sequenceContainer}>
-							<Text
-								style={[
-									styles.fontSize20,
-									styles.sequenceCharacter,
-								]}
-							>
-								3'
-							</Text>
-							{getSequencingColorCharacters(
-								dnaSequence.current.forward,
-								mapCharacterWithColor
-							)}
-							<Text
-								style={[
-									styles.fontSize20,
-									styles.sequenceCharacter,
-								]}
-							>
-								5'
-							</Text>
-						</Layout>
-					</Layout>
+					<View style={styles.sequenceContainer}>
+						<Text
+							style={[
+								styles.fontSize20,
+								styles.sequenceCharacter,
+							]}
+						>
+							5'
+						</Text>
+						{getSequencingColorCharacters(
+							dnaSequence.current.original,
+							mapCharacterWithColor
+						)}
+						<Text
+							style={[
+								styles.fontSize20,
+								styles.sequenceCharacter,
+							]}
+						>
+							3'
+						</Text>
+					</View>
+					<View style={styles.sequenceContainer}>
+						<Text
+							style={[
+								styles.fontSize20,
+								styles.sequenceCharacter,
+							]}
+						>
+							3'
+						</Text>
+						{getSequencingColorCharacters(
+							dnaSequence.current.forward,
+							mapCharacterWithColor
+						)}
+						<Text
+							style={[
+								styles.fontSize20,
+								styles.sequenceCharacter,
+							]}
+						>
+							5'
+						</Text>
+					</View>
 				</Layout>
 				<Layout style={styles.mh5}>
+					<Layout style={styles.textHeadingLayout}>
+						<Text style={styles.textHeading}>
+							Sequence for Reverse Primer:
+						</Text>
+					</Layout>
 					<Layout>
-						<Layout style={styles.textHeadingLayout}>
-							<Text style={styles.textHeading}>
-								Sequence for Forward Primer:
-							</Text>
-						</Layout>
 						<Input
 							style={styles.initialInputField}
 							onChangeText={setUserFP}
 							placeholder="Enter Sequence.."
 						/>
 					</Layout>
+					<Layout style={styles.textHeadingLayout}>
+						<Text style={styles.textHeading}>
+							Sequence for Forward Primer:
+						</Text>
+					</Layout>
 					<Layout>
-						<Layout style={styles.textHeadingLayout}>
-							<Text style={styles.textHeading}>
-								Sequence for Reverse Primer:
-							</Text>
-						</Layout>
 						<Input
 							style={styles.initialInputField}
 							onChangeText={setUserRP}
@@ -276,9 +310,9 @@ const InsilicoPCR = () => {
 								<Text style={styles.fontSize20}>3'</Text>
 							</Layout>
 							{/* Product Size */}
-							<Layout>
+							<Layout style={styles.flexRow}>
+								<Text style={styles.bold}>Product Size:{" "}</Text>
 								<Text>
-									Product Size:{" "}
 									{sequences.fpIndices[0] === -1 ||
 									sequences.rpIndices[1] === -1
 										? "Not available"
