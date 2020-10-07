@@ -16,6 +16,12 @@ import {
 	getSequencingColorCharacters,
 } from "../../../utils/util";
 
+/**
+ * @typedef InsilicoSequenceIndices
+ * @property {number[]} fpIndices
+ * @property {number[]} rpIndices
+ */
+
 // const { width, height } = Dimensions.get("window");
 
 const styles = StyleSheet.create({
@@ -104,9 +110,18 @@ const InsilicoPCR = () => {
 		})()
 	);
 	// Component States
+	/**
+	 * @type {[string | undefined, React.Dispatch<string>]}
+	 */
 	const [userFP, setUserFP] = useState("");
+	/**
+	 * @type {[string | undefined, React.Dispatch<string>]}
+	 */
 	const [userRP, setUserRP] = useState("");
-	const [sequences, setSequences] = useState(null);
+	/**
+	 * @type {[InsilicoSequenceIndices | undefined, React.Dispatch<InsilicoSequenceIndices>]}
+	 */
+	const [sequenceIndices, setSequenceIndices] = useState(null);
 	/**
 	 * @type {[ScrollView | undefined, React.Dispatch<ScrollView>]}
 	 */
@@ -167,7 +182,7 @@ const InsilicoPCR = () => {
 	/**
 	 * Calculates and sets up main sequences and scrolls view to the bottom
 	 * @param {React.RefObject<ScrollView>} scrollViewRef
-	 * @returns {void}
+	 * @returns {void} void
 	 */
 	const setMainSequences = () => {
 		if (!userFP || !userRP) {
@@ -187,7 +202,7 @@ const InsilicoPCR = () => {
 				calculateSequencing(userRP)
 			),
 		};
-		setSequences(_sequences);
+		setSequenceIndices(_sequences);
 		setTimeout(() => {
 			scrollViewRef.scrollToEnd({ animated: true });
 		});
@@ -288,15 +303,15 @@ const InsilicoPCR = () => {
 						Done
 					</Button>
 				</Layout>
-				{sequences && (
+				{sequenceIndices && (
 					<Layout style={styles.mh5}>
 						<Layout>
 							<Layout style={styles.sequenceContainer}>
 								<Text style={styles.fontSize20}>5'</Text>
 								{getHighlightedSequence(
 									dnaSequence.current.original,
-									sequences.fpIndices[0],
-									sequences.fpIndices[1]
+									sequenceIndices.fpIndices[0],
+									sequenceIndices.fpIndices[1]
 								)}
 								<Text style={styles.fontSize20}>3'</Text>
 							</Layout>
@@ -304,8 +319,8 @@ const InsilicoPCR = () => {
 								<Text style={styles.fontSize20}>5'</Text>
 								{getHighlightedSequence(
 									dnaSequence.current.forward,
-									sequences.rpIndices[0],
-									sequences.rpIndices[1]
+									sequenceIndices.rpIndices[0],
+									sequenceIndices.rpIndices[1]
 								)}
 								<Text style={styles.fontSize20}>3'</Text>
 							</Layout>
@@ -313,12 +328,12 @@ const InsilicoPCR = () => {
 							<Layout style={styles.flexRow}>
 								<Text style={styles.bold}>Product Size:{" "}</Text>
 								<Text>
-									{sequences.fpIndices[0] === -1 ||
-									sequences.rpIndices[1] === -1
+									{sequenceIndices.fpIndices[0] === -1 ||
+									sequenceIndices.rpIndices[1] === -1
 										? "Not available"
 										: `${
-												sequences.rpIndices[1] -
-												sequences.fpIndices[0]
+												sequenceIndices.rpIndices[1] -
+												sequenceIndices.fpIndices[0]
 										  } bp`}
 								</Text>
 							</Layout>
