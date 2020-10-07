@@ -103,16 +103,17 @@ export const reverseString = (str) =>
 
 /**
  * @description --- Returns sequence with terminal 5' or 3' characters ---
- * @param {'forward' | 'reverse'} primerType
+ * @param {'forward' | 'reverse' | 'complement'} primerType
  * @param {string} sequence
  */
 export const getSequenceWithTerminals = (primerType, sequence) => {
 	switch (primerType) {
-		case "forward":
-			return `5'${sequence}3'`;
-		case "reverse":
+		case "complement":
 			return `3'${sequence}5'`;
+			case "forward":
+			case "reverse":
+			return `5'${sequence}3'`;
 		default:
-			return;
+			return sequence;
 	}
 };
