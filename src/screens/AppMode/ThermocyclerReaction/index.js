@@ -1,16 +1,34 @@
 import React, { useState, useRef } from "react";
 import {
-	StyleSheet,
 	Alert,
+	Dimensions,
+	Image,
 	Keyboard,
-	ScrollView,
 	KeyboardAvoidingView,
+	ScrollView,
+	StyleSheet
 } from "react-native";
 import { Text, Layout, Input, Button } from "react-native-ui-kitten";
 import { WrapComponentWithKittenProvider } from "../../../utils/theming";
 import { useNavigation } from "react-navigation-hooks";
 import { useMount } from "../../../utils/appUtil";
 import { calculatePrimerValues } from "../../../utils/util";
+
+/**
+ * IMAGES
+ */
+const DENATURING = require("../../../../assets/images/denaturing.png");
+const ANNEALING1 = require("../../../../assets/images/Annealing1.png");
+const ANNEALING2 = require("../../../../assets/images/Annealing2.png");
+const EXTENSION = require("../../../../assets/images/Extension.png");
+
+/**
+ * DEVICE DETAILS
+ */
+
+ const {
+	 width
+ } = Dimensions.get("screen")
 
 /**
  * { AT: number, GC: number, TM: number }
@@ -73,6 +91,9 @@ const styles = StyleSheet.create({
 		display: "flex",
 		flexDirection: "column",
 		margin: 20,
+	},
+	images: {
+		width: width - 100
 	},
 	textHeadingLayout: {
 		backgroundColor: "#319ede",
@@ -364,6 +385,12 @@ const ThermocyclerReaction = () => {
 								>{`Melting Temperature (TM) Reverse Complementary Primer: `}</Text>
 								<Text>{`${calculation.reverse.TM}`}</Text>
 							</Text>
+							<Image
+								source={DENATURING}
+								style={styles.images}
+								resizeMethod="resize"
+								resizeMode="contain"
+							/>
 							<React.Fragment>
 								<Layout style={styles.textHeadingLayout}>
 									<Text
@@ -428,18 +455,36 @@ const ThermocyclerReaction = () => {
 							</Button>
 							{annealProductSizeCalc && (
 								<React.Fragment>
+									<Image
+										source={ANNEALING1}
+										style={styles.images}
+										resizeMethod="resize"
+										resizeMode="contain"
+									/>
 									<Text style={styles.textContent}>
 										<Text
 											style={styles.boldFace}
 										>{`Annealing Temperature 1: `}</Text>
 										<Text>{`${annealProductSizeCalc.annealingTemps.temp1}`}</Text>
 									</Text>
+									<Image
+										source={ANNEALING2}
+										style={styles.images}
+										resizeMethod="resize"
+										resizeMode="contain"
+									/>
 									<Text style={styles.textContentExtra}>
 										<Text
 											style={styles.boldFace}
 										>{`Annealing Temperature 2: `}</Text>
 										<Text>{`${annealProductSizeCalc.annealingTemps.temp2}`}</Text>
 									</Text>
+									<Image
+										source={EXTENSION}
+										style={styles.images}
+										resizeMethod="resize"
+										resizeMode="contain"
+									/>
 									<Text style={styles.textContent}>
 										<Text
 											style={styles.boldFace}
