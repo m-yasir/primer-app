@@ -1,1 +1,1 @@
-export const APP_EXPIRY_DATE = new Date(2020, 9, 30)
+export const APP_EXPIRY_DATE = new Date(2020, 10, 24)

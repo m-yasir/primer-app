@@ -21,13 +21,13 @@ const LiteratureMode = () => {
   const navigateToLiterature = (name) => () => {
     switch (name) {
       case "primer":
-        nav.navigate("PrimerLiterature");
+        nav.navigate("PrimerLiterature", { headerTitle: 'Primer Design' });
         break;
       case "insilico":
-        nav.navigate("InsilicoPCRLiterature");
+        nav.navigate("InsilicoPCRLiterature", { headerTitle: 'InsilicoPCR' });
         break;
       case "thermocycler":
-        nav.navigate("LMThermocyclerReaction");
+        nav.navigate("LMThermocyclerReaction", { headerTitle: 'Thermocycler Reaction' });
         break;
     }
   };

@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Alert } from "react-native";
+import { StyleSheet, Alert, Image, Text, View } from "react-native";
 import { createAppContainer } from "react-navigation";
 import { useNavigation } from "react-navigation-hooks";
 
@@ -16,7 +16,7 @@ import LMInsilicoPCR from "./src/screens/LiteratureMode/InsilicoPCRLiterature";
 import LMPrimerDesign from "./src/screens/LiteratureMode/PrimerLiterature";
 import LMThermocyclerReaction from "./src/screens/LiteratureMode/ThermocyclerReactionDesign";
 import { APP_EXPIRY_DATE } from "./src/utils/constants";
-import { author } from "./package.json"
+import { author } from "./package.json";
 
 if (new Date() >= APP_EXPIRY_DATE) {
 	Alert.alert(
@@ -154,7 +154,8 @@ const MainNavigator = createStackNavigator(
 		Home: {
 			screen: MainScreenContainer,
 		},
-		AppMode: { // TODO: Rename to Tool Mode
+		AppMode: {
+			// TODO: Rename to Tool Mode
 			screen: AppMode,
 		},
 		AMPrimerDesign: {
@@ -180,13 +181,50 @@ const MainNavigator = createStackNavigator(
 		},
 	},
 	{
-		defaultNavigationOptions: {
+		defaultNavigationOptions: ({ navigation, navigationOptions }) => ({
 			cardStyle: { backgroundColor: "#fff", opacity: 1 },
 			headerStyle: { backgroundColor: "#319ede" },
 			headerTintColor: "#fff",
 			headerTitleAlign: "left",
 			headerTitleStyle: { fontWeight: "bold", color: "#fff" },
-		},
+			headerTitle: () => {
+				const headerTitle =
+					navigation.getParam("headerTitle") ||
+					navigationOptions.title;
+				return (
+					<View
+						style={{
+							alignItems: "center",
+							display: "flex",
+							flexDirection: "row",
+							justifyContent: "flex-start",
+							marginBottom: 10,
+						}}
+					>
+						<Text
+							style={{
+								fontSize: 20,
+								color: "#FFF",
+								fontWeight: "bold",
+							}}
+						>
+							{headerTitle || "PRIMeasy"}
+						</Text>
+						{!headerTitle && (
+							<Image
+								resizeMethod="scale"
+								resizeMode="contain"
+								style={{
+									width: 50,
+									height: 50,
+								}}
+								source={require("./assets/logo.png")}
+							/>
+						)}
+					</View>
+				);
+			},
+		}),
 	}
 	// {
 	// 	// transparentCard: true

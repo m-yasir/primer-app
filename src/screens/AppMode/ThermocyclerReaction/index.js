@@ -511,18 +511,4 @@ const ThermocyclerReactionContainer = WrapComponentWithKittenProvider(
 	ThermocyclerReaction
 );
 
-// ThermocyclerReactionContainer.navigationOptions = ({ navigation }) => ({
-ThermocyclerReactionContainer.navigationOptions = () => ({
-	// title: navigation.getParam("headerTitle"),
-	title: "Thermocycler Reaction",
-	headerStyle: {
-		backgroundColor: "#319ede",
-	},
-	headerTitleStyle: {
-		fontWeight: "bold",
-		color: "#fff",
-	},
-	headerTintColor: "#fff",
-});
-
 export default ThermocyclerReactionContainer;
