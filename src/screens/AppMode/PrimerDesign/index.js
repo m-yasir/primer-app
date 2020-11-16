@@ -361,8 +361,4 @@ const PrimerDesign = () => {
 
 const PrimerDesignContainer = WrapComponentWithKittenProvider(PrimerDesign);
 
-PrimerDesignContainer.navigationOptions = ({ navigation }) => ({
-	title: navigation.getParam("headerTitle"),
-});
-
 export default PrimerDesignContainer;

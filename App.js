@@ -17,6 +17,7 @@ import LMPrimerDesign from "./src/screens/LiteratureMode/PrimerLiterature";
 import LMThermocyclerReaction from "./src/screens/LiteratureMode/ThermocyclerReactionDesign";
 import { APP_EXPIRY_DATE } from "./src/utils/constants";
 import { author } from "./package.json";
+import ScreenHeader from "./src/components/screenHeader";
 
 if (new Date() >= APP_EXPIRY_DATE) {
 	Alert.alert(
@@ -187,43 +188,12 @@ const MainNavigator = createStackNavigator(
 			headerTintColor: "#fff",
 			headerTitleAlign: "left",
 			headerTitleStyle: { fontWeight: "bold", color: "#fff" },
-			headerTitle: () => {
-				const headerTitle =
-					navigation.getParam("headerTitle") ||
-					navigationOptions.title;
-				return (
-					<View
-						style={{
-							alignItems: "center",
-							display: "flex",
-							flexDirection: "row",
-							justifyContent: "flex-start",
-							marginBottom: 10,
-						}}
-					>
-						<Text
-							style={{
-								fontSize: 20,
-								color: "#FFF",
-								fontWeight: "bold",
-							}}
-						>
-							{headerTitle || "PRIMeasy"}
-						</Text>
-						{!headerTitle && (
-							<Image
-								resizeMethod="scale"
-								resizeMode="contain"
-								style={{
-									width: 50,
-									height: 50,
-								}}
-								source={require("./assets/logo.png")}
-							/>
-						)}
-					</View>
-				);
-			},
+			headerTitle: (
+				<ScreenHeader
+					navigation={navigation}
+					navigationOptions={navigationOptions}
+				/>
+			),
 		}),
 	}
 	// {
