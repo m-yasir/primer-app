@@ -86,10 +86,10 @@ export const getSequenceCharColor = (char) => {
  * @param {(char: string, idx: number) => JSX.Element} mapCharacterWithColor
  * @param {boolean} isReverse
  */
-export const getSequencingColorCharacters = (sequence, mapCharacterWithColor, isReverse = false) => {
+export const getSequencingColorCharacters = (sequence, mapCharacterWithColor, calcSeq = true, isReverse = false) => {
 	return (isReverse ? reverseString(sequence) : sequence)
 		.split("")
-		.map((char) => getSequenceCharacter(char))
+		.map((char) => calcSeq ? getSequenceCharacter(char) : char)
 		.map(mapCharacterWithColor);
 };
 

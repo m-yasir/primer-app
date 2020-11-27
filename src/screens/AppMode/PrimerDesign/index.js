@@ -207,12 +207,12 @@ const PrimerDesign = () => {
 						flexWrap: "wrap",
 					}}
 				>
-					<Text style={[styles.fontSize20, styles.sequenceCharacter]}>5'</Text>
+					<Text style={[styles.fontSize20, styles.sequenceCharacter]}>3'</Text>
 					{getSequencingColorCharacters(
 						dnaSequence,
 						mapCharacterWithColor
 					)}
-					<Text style={[styles.fontSize20, styles.sequenceCharacter]}>3'</Text>
+					<Text style={[styles.fontSize20, styles.sequenceCharacter]}>5'</Text>
 				</View>
 				<Text style={{ marginTop: 5, marginBottom: 5 }}>
 					<Text style={{ fontWeight: "bold" }}>

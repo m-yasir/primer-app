@@ -1,7 +1,6 @@
 import React, { useState, useRef } from "react";
 import {
 	Alert,
-	// Dimensions,
 	KeyboardAvoidingView,
 	ScrollView,
 	StyleSheet,
@@ -14,6 +13,7 @@ import {
 	calculateSequencing,
 	getSequenceCharColor,
 	getSequencingColorCharacters,
+	reverseString
 } from "../../../utils/util";
 
 /**
@@ -134,6 +134,16 @@ const InsilicoPCR = () => {
 			),
 		});
 	};
+	
+	/**
+	 * 
+	 * @param {(value: string) => void} setValue
+	 * @returns {(value: string) => void}
+	 */
+	const setIndices = (setValue) => (value) => {
+		setSequenceIndices(null);
+		setValue(value);
+	}
 
 	/**
 	 *
@@ -166,9 +176,13 @@ const InsilicoPCR = () => {
 
 	const getHighlightedSequence = (sequence, start, end) => {
 		let notFound = false;
-		if (start === -1 || end === -1) {
+		if (start === -1) {
 			notFound = true;
-			Alert.alert("Forward or reverse primer not found");
+			Alert.alert("Forward primer not found");
+		}
+		if (end === -1) {
+			notFound = true;
+			Alert.alert("Reverse primer not found");
 		}
 		return notFound
 			? sequence.split("").map(mapCharacterWithColor)
@@ -192,15 +206,22 @@ const InsilicoPCR = () => {
 			);
 			return;
 		}
+		const reverseIndices = getBpIndices(
+			reverseString(dnaSequence.current.forward),
+			userRP
+		)
+		/**
+		 * Sequence Length
+		 * @type {number}
+		 */
+		const L = dnaSequence.current.forward.length
+		/** @type {InsilicoSequenceIndices} */
 		const _sequences = {
 			fpIndices: getBpIndices(
 				dnaSequence.current.original,
-				calculateSequencing(userFP)
+				userFP
 			),
-			rpIndices: getBpIndices(
-				dnaSequence.current.forward,
-				calculateSequencing(userRP)
-			),
+			rpIndices: [L - reverseIndices[1] - 1, L - reverseIndices[0] - 1],
 		};
 		setSequenceIndices(_sequences);
 		setTimeout(() => {
@@ -233,7 +254,8 @@ const InsilicoPCR = () => {
 						</Text>
 						{getSequencingColorCharacters(
 							dnaSequence.current.original,
-							mapCharacterWithColor
+							mapCharacterWithColor,
+							false
 						)}
 						<Text
 							style={[
@@ -255,7 +277,8 @@ const InsilicoPCR = () => {
 						</Text>
 						{getSequencingColorCharacters(
 							dnaSequence.current.forward,
-							mapCharacterWithColor
+							mapCharacterWithColor,
+							false
 						)}
 						<Text
 							style={[
@@ -276,7 +299,7 @@ const InsilicoPCR = () => {
 					<Layout>
 						<Input
 							style={styles.initialInputField}
-							onChangeText={setUserFP}
+							onChangeText={setIndices(setUserFP)}
 							placeholder="Enter Sequence.."
 						/>
 					</Layout>
@@ -288,7 +311,7 @@ const InsilicoPCR = () => {
 					<Layout>
 						<Input
 							style={styles.initialInputField}
-							onChangeText={setUserRP}
+							onChangeText={setIndices(setUserRP)}
 							placeholder="Enter Sequence.."
 						/>
 					</Layout>
@@ -332,8 +355,8 @@ const InsilicoPCR = () => {
 									sequenceIndices.rpIndices[1] === -1
 										? "Not available"
 										: `${
-												sequenceIndices.rpIndices[1] -
-												sequenceIndices.fpIndices[0]
+												Math.abs(sequenceIndices.fpIndices[0] -
+												sequenceIndices.rpIndices[1])
 										  } bp`}
 								</Text>
 							</Layout>

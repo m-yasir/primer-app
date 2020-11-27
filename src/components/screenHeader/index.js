@@ -1,4 +1,5 @@
-import React from "react-native"
+import React from "react"
+import { View, Text, Image } from "react-native"
 import { NavigationScreenProp } from "react-navigation"
 import { NavigationStackOptions } from "react-navigation-stack"
 /**
@@ -43,7 +44,7 @@ export default (props) => {
                         width: 50,
                         height: 50,
                     }}
-                    source={require("./assets/logo.png")}
+                    source={require("./../../../assets/logo.png")}
                 />
             )}
         </View>
