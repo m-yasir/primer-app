@@ -293,7 +293,7 @@ const InsilicoPCR = () => {
 				<Layout style={styles.mh5}>
 					<Layout style={styles.textHeadingLayout}>
 						<Text style={styles.textHeading}>
-							Sequence for Reverse Primer:
+							Sequence for Forward Primer:
 						</Text>
 					</Layout>
 					<Layout>
@@ -305,7 +305,7 @@ const InsilicoPCR = () => {
 					</Layout>
 					<Layout style={styles.textHeadingLayout}>
 						<Text style={styles.textHeading}>
-							Sequence for Forward Primer:
+							Sequence for Reverse Primer:
 						</Text>
 					</Layout>
 					<Layout>
